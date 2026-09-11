@@ -1,0 +1,22 @@
+name: economic_pulse
+version: "1.0.0"
+config-version: 2
+
+profile: economic_pulse
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  economic_pulse:
+    staging:
+      +schema: staging
+      +materialized: view
+    marts:
+      +schema: marts
+      +materialized: table

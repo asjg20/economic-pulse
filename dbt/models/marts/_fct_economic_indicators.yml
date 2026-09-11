@@ -1,0 +1,30 @@
+version: 2
+
+models:
+  - name: fct_economic_indicators
+    description: One row per series/date with period-over-period change and a trailing rolling average.
+    columns:
+      - name: series_id
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ["UMCSENT", "UNRATE", "GDP", "CPIAUCSL", "FEDFUNDS", "T10Y2Y"]
+      - name: date
+        tests:
+          - not_null
+      - name: value
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 30
+              config:
+                where: "series_id = 'UNRATE'"
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 25
+              config:
+                where: "series_id = 'FEDFUNDS'"
