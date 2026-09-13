@@ -2,7 +2,7 @@ fredapi==0.5.2
 google-cloud-bigquery==3.25.0
 pyarrow==25.0.1
 pandas==3.0.5
-python-dotenv==1.0.1
+python-dotenv==1.2.3
 dbt-core==1.12.4
 dbt-bigquery==1.12.0
 statsmodels==0.15.0
