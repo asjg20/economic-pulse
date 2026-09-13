@@ -1,6 +1,6 @@
 # Economic Pulse
 
-**Does consumer sentiment lead the economy?** An end-to-end analytics pipeline that tests whether how people *feel* about the economy actually predicts what it does next — using Federal Reserve data, modeled in a cloud warehouse, tested with real statistics, and published as a self-updating dashboard.
+**Does consumer confidence lead the economy?** An end-to-end analytics pipeline that tests whether how people *feel* about the economy actually predicts what it does next — using Federal Reserve data, modeled in a cloud warehouse, tested with real statistics, and published as a self-updating dashboard.
 
 **[→ Live dashboard](https://asjg20.github.io/economic-pulse/)** — the plain-language version of the finding, written for a non-technical reader. This README is the technical write-up: method, architecture, and caveats.
 
