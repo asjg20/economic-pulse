@@ -2,7 +2,9 @@
 
 **Does consumer confidence lead the economy?** This project tests whether how people *feel* about the economy actually predicts what it does next — using Federal Reserve data, modeled in a cloud warehouse, tested with real statistics, and published as a dashboard that updates itself every month.
 
-**[→ Live dashboard](https://asjg20.github.io/economic-pulse/)** — the plain-language version of the finding, written for a non-technical reader. This README is the technical write-up.
+[![View Live Dashboard](https://img.shields.io/badge/→_View_Live_Dashboard-2E86AB?style=for-the-badge)](https://asjg20.github.io/economic-pulse/)
+
+The dashboard is the plain-language version of the finding, written for a non-technical reader. This README is the technical write-up.
 
 ## Objective
 
