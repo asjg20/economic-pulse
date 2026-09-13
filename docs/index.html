@@ -3,108 +3,118 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Economic Pulse — Does consumer sentiment lead the economy?</title>
-<meta name="description" content="Testing whether U.S. consumer sentiment predicts unemployment and GDP, using Federal Reserve data, cross-correlation and Granger causality.">
+<title>Economic Pulse — Does consumer confidence predict the economy?</title>
+<meta name="description" content="Do consumer confidence surveys predict unemployment and growth? A plain-language read of what Federal Reserve data actually shows.">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.0.1/plotly.min.js"></script>
 <style>
   :root{
     color-scheme: light;
-    --page:#f9f9f7;
-    --surface:#fcfcfb;
-    --ink-1:#0b0b0b;
-    --ink-2:#52514e;
-    --ink-muted:#898781;
-    --grid:#e1e0d9;
-    --axis:#c3c2b7;
-    --border:rgba(11,11,11,0.10);
-    --s1:#2a78d6;
-    --s2:#eb6834;
-    --s3:#1baf7a;
-    --ok:#0ca30c;
+    --page:#f9f9f7; --surface:#fcfcfb;
+    --ink-1:#0b0b0b; --ink-2:#52514e; --ink-muted:#898781;
+    --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,0.10);
+    --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a;
+    --ok:#0ca30c; --ok-bg:#e8f5e8; --no:#c2410c; --no-bg:#fdf0e8;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       color-scheme: dark;
-      --page:#0d0d0d;
-      --surface:#1a1a19;
-      --ink-1:#ffffff;
-      --ink-2:#c3c2b7;
-      --ink-muted:#898781;
-      --grid:#2c2c2a;
-      --axis:#383835;
-      --border:rgba(255,255,255,0.10);
-      --s1:#3987e5;
-      --s2:#d95926;
-      --s3:#199e70;
-      --ok:#0ca30c;
+      --page:#0d0d0d; --surface:#1a1a19;
+      --ink-1:#ffffff; --ink-2:#c3c2b7; --ink-muted:#898781;
+      --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,0.10);
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70;
+      --ok:#3fbf3f; --ok-bg:#142b14; --no:#e8834f; --no-bg:#2e1c11;
     }
   }
   *{box-sizing:border-box;}
   body{
-    margin:0;
-    background:var(--page);
-    color:var(--ink-1);
+    margin:0; background:var(--page); color:var(--ink-1);
     font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:1080px;margin:0 auto;padding-block:48px 80px;padding-inline:20px;}
-  header{border-bottom:1px solid var(--border);padding-bottom:28px;margin-bottom:40px;}
-  .eyebrow{
-    font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--ink-muted);font-weight:600;margin:0 0 10px;
+  .wrap{max-width:960px;margin:0 auto;padding-block:48px 80px;padding-inline:20px;}
+
+  header{margin-bottom:36px;}
+  .eyebrow{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin:0 0 10px;}
+  h1{font-size:clamp(1.9rem,4.5vw,2.7rem);line-height:1.12;margin:0 0 14px;letter-spacing:-.02em;max-width:20ch;}
+  .stamp{font-size:.82rem;color:var(--ink-muted);margin:0;}
+
+  .answer{
+    background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--s1);
+    border-radius:12px;padding:24px 26px;margin-bottom:32px;
   }
-  h1{font-size:clamp(1.8rem,4vw,2.5rem);line-height:1.15;margin:0 0 12px;letter-spacing:-.02em;}
-  .sub{font-size:1.05rem;color:var(--ink-2);margin:0;max-width:62ch;}
-  .stamp{font-size:.82rem;color:var(--ink-muted);margin:16px 0 0;}
-  section{margin-bottom:52px;}
-  h2{font-size:1.25rem;margin:0 0 6px;letter-spacing:-.01em;}
-  .lede{color:var(--ink-2);margin:0 0 20px;max-width:68ch;font-size:.96rem;}
-  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
+  .answer .kicker{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin:0 0 10px;}
+  .answer .verdict{font-size:clamp(1.15rem,2.6vw,1.45rem);font-weight:600;line-height:1.35;margin:0 0 12px;letter-spacing:-.01em;}
+  .answer .detail{font-size:1rem;color:var(--ink-2);margin:0;max-width:70ch;}
+
+  section{margin-bottom:48px;}
+  h2{font-size:1.3rem;margin:0 0 8px;letter-spacing:-.01em;}
+  .lede{color:var(--ink-2);margin:0 0 22px;max-width:70ch;font-size:.97rem;}
+
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
   @media (max-width:760px){.tiles{grid-template-columns:1fr;}}
-  .tile{
-    background:var(--surface);border:1px solid var(--border);border-radius:10px;
-    padding:16px 18px;display:flex;flex-direction:column;gap:5px;
-  }
-  .tile .label{font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;}
-  .tile .value{font-size:1.7rem;font-weight:600;line-height:1.15;}
-  .tile .note{font-size:.85rem;color:var(--ink-2);}
-  .card{
-    background:var(--surface);border:1px solid var(--border);border-radius:10px;
-    padding:20px;margin-bottom:18px;
-  }
-  .finding{font-size:1rem;color:var(--ink-1);margin:0;}
-  .finding b{font-weight:600;}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:17px 19px;display:flex;flex-direction:column;gap:5px;}
+  .tile .label{font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;}
+  .tile .value{font-size:1.75rem;font-weight:600;line-height:1.1;}
+  .tile .note{font-size:.86rem;color:var(--ink-2);}
+
+  .points{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media (max-width:760px){.points{grid-template-columns:1fr;}}
+  .point{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+  .point h3{font-size:.98rem;margin:0 0 7px;font-weight:600;}
+  .point p{margin:0;font-size:.9rem;color:var(--ink-2);}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
   .plot{width:100%;}
-  .chart-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-  @media (max-width:860px){.chart-pair{grid-template-columns:1fr;}}
-  .caption{font-size:.85rem;color:var(--ink-2);margin:10px 0 0;max-width:66ch;}
-  .grid6{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-  @media (max-width:860px){.grid6{grid-template-columns:1fr 1fr;}}
-  @media (max-width:560px){.grid6{grid-template-columns:1fr;}}
-  .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
-  .controls .lbl{font-size:.85rem;color:var(--ink-2);}
+  .caption{font-size:.86rem;color:var(--ink-2);margin:12px 0 0;max-width:70ch;}
+
+  .evidence{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media (max-width:700px){.evidence{grid-template-columns:1fr;}}
+  .ev-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:17px 19px;}
+  .ev-card .ev-title{display:flex;align-items:center;gap:9px;font-weight:600;font-size:.98rem;margin-bottom:4px;}
+  .ev-card .ev-sub{font-size:.85rem;color:var(--ink-2);margin:0 0 13px;}
+  .ev-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .ev-pill{
+    display:inline-flex;align-items:center;gap:6px;font-size:.83rem;font-weight:500;
+    padding:5px 11px;border-radius:99px;border:1px solid;
+  }
+  .ev-pill.pass{color:var(--ok);border-color:var(--ok);background:var(--ok-bg);}
+  .ev-pill.fail{color:var(--no);border-color:var(--no);background:var(--no-bg);}
+
+  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .controls .lbl{font-size:.9rem;color:var(--ink-2);}
   .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
   .seg button{
     appearance:none;border:0;background:var(--surface);color:var(--ink-2);
-    font:inherit;font-size:.85rem;padding:6px 13px;cursor:pointer;min-height:34px;
-    border-right:1px solid var(--border);
+    font:inherit;font-size:.86rem;padding:7px 14px;cursor:pointer;min-height:36px;border-right:1px solid var(--border);
   }
   .seg button:last-child{border-right:0;}
   .seg button[aria-pressed="true"]{background:var(--s1);color:#fff;font-weight:600;}
   .seg button:focus-visible{outline:2px solid var(--s1);outline-offset:-2px;}
-  table{border-collapse:collapse;width:100%;font-size:.88rem;}
-  caption{text-align:left;font-size:.85rem;color:var(--ink-2);padding-bottom:10px;}
-  th,td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;}
+
+  .grid6{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  @media (max-width:860px){.grid6{grid-template-columns:1fr 1fr;}}
+  @media (max-width:560px){.grid6{grid-template-columns:1fr;}}
+  .mini-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:2px;}
+  .mini-name{font-size:.85rem;font-weight:600;}
+  .mini-val{font-size:1.05rem;font-weight:600;}
+  .mini-meta{font-size:.76rem;color:var(--ink-muted);margin-bottom:6px;}
+
+  details{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0 20px;}
+  summary{cursor:pointer;padding:16px 0;font-weight:600;font-size:.97rem;list-style-position:inside;}
+  summary::marker{color:var(--ink-muted);}
+  details[open] summary{border-bottom:1px solid var(--border);margin-bottom:4px;}
+  .tbl-scroll{overflow-x:auto;padding-bottom:16px;}
+  table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px;}
+  th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;}
   th:first-child,td:first-child{text-align:left;font-variant-numeric:normal;}
-  thead th{font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;}
+  thead th{font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;}
   tbody tr:last-child td{border-bottom:0;}
   .yes{color:var(--ok);font-weight:600;}
-  .no{color:var(--ink-muted);}
-  .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;vertical-align:baseline;}
-  footer{border-top:1px solid var(--border);padding-top:22px;font-size:.87rem;color:var(--ink-2);}
+  .no-t{color:var(--no);font-weight:600;}
+  .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;}
+
+  footer{border-top:1px solid var(--border);padding-top:22px;font-size:.88rem;color:var(--ink-2);}
   footer a{color:var(--s1);}
-  .msg{color:var(--ink-2);font-size:.92rem;}
 </style>
 </head>
 <body>
@@ -112,373 +122,354 @@
 
   <header>
     <p class="eyebrow">Economic Pulse</p>
-    <h1>Does consumer sentiment lead the economy?</h1>
-    <p class="sub">Consumer spending is roughly 70% of U.S. GDP, so if how people <em>feel</em> about the economy reliably runs ahead of unemployment and growth — rather than just moving alongside them — it is a useful early signal. This tests that directly, with Federal Reserve data, cross-correlation and Granger causality.</p>
+    <h1>Does consumer confidence predict the economy?</h1>
     <p class="stamp" id="stamp">Loading…</p>
   </header>
 
-  <section id="finding-section">
-    <h2>What the analysis found</h2>
-    <p class="lede">Computed from the full history of each series, not the charted window.</p>
+  <div class="answer">
+    <p class="kicker">The short answer</p>
+    <p class="verdict" id="verdict">Loading…</p>
+    <p class="detail" id="verdict-detail"></p>
+  </div>
+
+  <div id="narrative-slot"></div>
+
+  <section>
+    <h2>The headline numbers</h2>
+    <p class="lede">Based on every month of Federal Reserve data going back to the 1940s — not just the period shown in the charts below.</p>
     <div class="tiles" id="tiles"></div>
-    <div class="card"><p class="finding" id="finding">Loading…</p></div>
-    <div id="narrative-slot"></div>
+    <div class="points">
+      <div class="point">
+        <h3>Which direction?</h3>
+        <p>Confidence and unemployment move <strong>opposite</strong> each other. When people feel worse about the economy, unemployment tends to rise in the months that follow.</p>
+      </div>
+      <div class="point">
+        <h3>How useful is it?</h3>
+        <p>It's a <strong>directional hint, not a forecast</strong>. The link is real and measurable, but moderate — enough to inform a view, not enough to predict a number.</p>
+      </div>
+      <div class="point">
+        <h3>Where's the catch?</h3>
+        <p>The 12-month signal <strong>looks</strong> strongest but is the one result that fails the statistical test. The dependable window is 1 to 6 months.</p>
+      </div>
+    </div>
   </section>
 
   <section>
-    <h2>Relationship strength, by how far ahead sentiment is measured</h2>
-    <p class="lede">Sentiment is shifted back by 1, 3, 6 and 12 months and compared against what unemployment and GDP did at that later date. The left panel is how strongly the two move together; the right is whether past sentiment actually improves a forecast.</p>
-    <div class="chart-pair">
-      <div class="card">
-        <div id="corr-plot" class="plot"></div>
-        <p class="caption">Every value is negative: higher sentiment precedes a <em>lower</em> reading. Bars further from zero mean a stronger relationship.</p>
-      </div>
-      <div class="card">
-        <div id="pval-plot" class="plot"></div>
-        <p class="caption">Granger causality p-values on a log scale — lower is stronger evidence. Points below the 0.05 line mean past sentiment improves the forecast beyond the target's own history.</p>
-      </div>
-    </div>
+    <h2>How strong is the link, and how far ahead?</h2>
+    <p class="lede">Each bar shows how closely consumer confidence tracks what happened next, measured at four different lead times. Taller means a stronger relationship.</p>
     <div class="card">
-      <table id="lag-table">
-        <caption>Every number behind the two charts above.</caption>
-      </table>
+      <div id="corr-plot" class="plot"></div>
+      <p class="caption" id="corr-caption"></p>
     </div>
+    <div class="evidence" id="evidence"></div>
   </section>
 
   <section>
-    <h2>Seeing the lead directly</h2>
-    <p class="lede">Two separate panels sharing one timeline — never one chart with two scales, which would invent an alignment that isn't in the data. Shift sentiment forward and watch whether its turning points start landing on unemployment's.</p>
+    <h2>See it for yourself</h2>
+    <p class="lede">Confidence on top, unemployment below, sharing the same timeline. Slide confidence forward and watch whether its peaks and dips start landing on unemployment's — that shifting is exactly what the analysis does mathematically.</p>
     <div class="controls">
-      <span class="lbl">Shift sentiment forward by:</span>
-      <div class="seg" id="shift-seg" role="group" aria-label="Shift sentiment forward by"></div>
+      <span class="lbl">Move confidence forward by:</span>
+      <div class="seg" id="shift-seg" role="group" aria-label="Move confidence forward by"></div>
     </div>
     <div class="card">
       <div id="lead-plot" class="plot"></div>
-      <p class="caption">The pattern being tested: sentiment turning down <em>before</em> unemployment turns up. Shifting sentiment forward slides its peaks and troughs rightward — if the relationship is real, they should line up better with unemployment's at some shift than at none.</p>
+      <p class="caption">Two separate panels, each with its own scale — deliberately not one chart with two axes, which would let the picture imply a closeness that isn't in the numbers.</p>
     </div>
   </section>
 
   <section>
-    <h2>The six indicators</h2>
-    <p class="lede">The three in color are the hypothesis; the three in grey are context that rounds out the picture. Monthly from <span id="start-date">1990</span>, with the daily yield-curve series reduced to its last reading each month.</p>
+    <h2>Where things stand now</h2>
+    <p class="lede">The two series above, plus four more that round out the picture. Latest reading and the change over the past year.</p>
     <div class="grid6" id="grid6"></div>
   </section>
 
+  <section>
+    <h2>The detail</h2>
+    <p class="lede">Every number behind the charts, for anyone who wants to check the work.</p>
+    <details>
+      <summary>Full results and how to read them</summary>
+      <div class="tbl-scroll"><table id="lag-table"></table></div>
+      <p class="caption" style="padding-bottom:18px;">
+        <strong>Correlation</strong> runs from 0 (no relationship) to −1 (a perfect opposite relationship); around −0.3 to −0.4 is a moderate link.
+        <strong>Evidence test</strong> asks a stricter question: does knowing past confidence actually improve a forecast beyond what unemployment's own history already tells you? Below 0.05 is the conventional bar for "unlikely to be coincidence."
+        A result can score well on the first and still fail the second — which is what happens at the 12-month lead.
+      </p>
+    </details>
+  </section>
+
   <footer>
-    <p>FRED API → BigQuery → dbt → Python (statsmodels) → GitHub Actions → this page. The pipeline runs itself on the 10th of each month and commits the refreshed data back to the repo. <a href="https://github.com/asjg20/economic-pulse">Source on GitHub</a>.</p>
+    <p>Built from <a href="https://fred.stlouisfed.org">Federal Reserve Economic Data</a>. The whole pipeline — pull, clean, test, analyse, publish — reruns itself on the 10th of each month, so these numbers stay current on their own. <a href="https://github.com/asjg20/economic-pulse">Technical write-up and source code</a>.</p>
   </footer>
 
 </div>
 
 <script>
 const PLOT_CONFIG = {responsive:true, displayModeBar:false};
-const LAGS = [1,3,6,12];
 const SHIFTS = [0,1,3,6,12];
 const SERIES_COLOR = {UMCSENT:'--s1', UNRATE:'--s2', GDP:'--s3'};
+const FRIENDLY = {
+  UMCSENT:'Consumer confidence', UNRATE:'Unemployment', GDP:'Economic growth (GDP)',
+  CPIAUCSL:'Inflation (CPI)', FEDFUNDS:'Interest rate', T10Y2Y:'Yield curve gap'
+};
+const UNITS = {UMCSENT:'', UNRATE:'%', GDP:'', CPIAUCSL:'', FEDFUNDS:'%', T10Y2Y:'%'};
 
 let DATA = {indicators:null, lag:null, narrative:null};
 let shiftMonths = 0;
 
-function tok(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-function colorFor(id){
-  return SERIES_COLOR[id] ? tok(SERIES_COLOR[id]) : tok('--ink-muted');
-}
+const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const colorFor = id => SERIES_COLOR[id] ? tok(SERIES_COLOR[id]) : tok('--ink-muted');
+const fmt = (n,d) => (n===null||n===undefined) ? '—' : Number(n).toFixed(d);
+
 function baseLayout(extra){
-  const layout = {
-    paper_bgcolor:'rgba(0,0,0,0)',
-    plot_bgcolor:'rgba(0,0,0,0)',
+  return Object.assign({
+    paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
     font:{family:'system-ui,-apple-system,"Segoe UI",sans-serif', size:12, color:tok('--ink-2')},
-    margin:{l:52,r:16,t:34,b:40},
+    margin:{l:54,r:16,t:34,b:40},
     hoverlabel:{bgcolor:tok('--surface'), bordercolor:tok('--border'), font:{color:tok('--ink-1'), size:12}},
     showlegend:false,
-  };
-  return Object.assign(layout, extra||{});
+  }, extra||{});
 }
 function axis(extra){
   return Object.assign({
-    gridcolor:tok('--grid'),
-    linecolor:tok('--axis'),
-    zerolinecolor:tok('--axis'),
-    tickfont:{color:tok('--ink-muted'), size:11},
-    automargin:true,
+    gridcolor:tok('--grid'), linecolor:tok('--axis'), zerolinecolor:tok('--axis'),
+    tickfont:{color:tok('--ink-muted'), size:11}, automargin:true,
   }, extra||{});
 }
-function seriesByIdMap(){
-  const m = {};
-  DATA.indicators.series.forEach(s => { m[s.series_id] = s; });
-  return m;
-}
-function fmt(n, digits){
-  return (n === null || n === undefined) ? '—' : Number(n).toFixed(digits);
+function seriesMap(){
+  const m={}; DATA.indicators.series.forEach(s=>{m[s.series_id]=s;}); return m;
 }
 function shiftIso(iso, months){
-  if (!months) return iso;
-  const d = new Date(iso + 'T00:00:00Z');
-  d.setUTCMonth(d.getUTCMonth() + months);
+  if(!months) return iso;
+  const d = new Date(iso+'T00:00:00Z');
+  d.setUTCMonth(d.getUTCMonth()+months);
   return d.toISOString().slice(0,10);
 }
+function rowsFor(t){
+  return DATA.lag.results.filter(r=>r.target_indicator===t).sort((a,b)=>a.lag_months-b.lag_months);
+}
+function strongestRow(t){
+  return rowsFor(t).reduce((b,r)=>Math.abs(r.cross_correlation)>Math.abs(b.cross_correlation)?r:b);
+}
+function passingRows(t){ return rowsFor(t).filter(r=>r.granger_p_value<0.05); }
 
-/* ---------- headline numbers ---------- */
-function rowsFor(target){
-  return DATA.lag.results.filter(r => r.target_indicator === target)
-                         .sort((a,b) => a.lag_months - b.lag_months);
-}
-function strongestRow(target){
-  return rowsFor(target).reduce((best,r) =>
-    Math.abs(r.cross_correlation) > Math.abs(best.cross_correlation) ? r : best);
-}
-function sigCount(target){
-  return rowsFor(target).filter(r => r.granger_p_value < 0.05).length;
+/* ---------- the answer ---------- */
+function renderVerdict(){
+  const pass = passingRows('UNRATE').map(r=>r.lag_months);
+  const best = strongestRow('UNRATE');
+  const bestPasses = best.granger_p_value < 0.05;
+  const span = pass.length
+    ? (pass.length === 1 ? `${pass[0]} months` : `${Math.min(...pass)} to ${Math.max(...pass)} months`)
+    : 'no lead time';
+
+  document.getElementById('verdict').textContent = pass.length
+    ? `Partly — consumer confidence gives a real but modest early signal for unemployment, most dependably ${span} ahead.`
+    : 'Not reliably — the data does not support consumer confidence as an early signal here.';
+
+  const strength = Math.abs(best.cross_correlation) >= 0.4 ? 'moderate'
+                 : Math.abs(best.cross_correlation) >= 0.25 ? 'moderate' : 'weak';
+  document.getElementById('verdict-detail').innerHTML = pass.length
+    ? `Falling confidence tends to precede rising unemployment, and that pattern holds up to statistical testing at ${pass.map(p=>p+'-month').join(', ')} lead times. `
+      + `The strongest raw relationship sits at ${best.lag_months} months (a ${strength} correlation of ${fmt(best.cross_correlation,2)}), but `
+      + (bestPasses ? 'it also clears the evidence test.' : `that particular lead time is the one that <em>fails</em> the evidence test — so the shorter window is the one to trust.`)
+    : '';
 }
 
 function renderTiles(){
-  const byId = seriesByIdMap();
-  const sent = byId.UMCSENT.observations.at(-1);
-  const un = strongestRow('UNRATE');
+  const m = seriesMap();
+  const sent = m.UMCSENT.observations.at(-1);
+  const un = m.UNRATE.observations.at(-1);
+  const pass = passingRows('UNRATE').map(r=>r.lag_months);
   const tiles = [
-    {label:'Strongest link — unemployment',
-     value:`r = ${fmt(un.cross_correlation,2)}`,
-     note:`at a ${un.lag_months}-month lead`},
-    {label:'Lags with significant evidence',
-     value:`${sigCount('UNRATE')} of 4`,
-     note:'unemployment, Granger p &lt; 0.05'},
-    {label:'Latest sentiment reading',
-     value:fmt(sent.value,1),
-     note:`index, ${sent.date}`},
+    {label:'Dependable warning window', value: pass.length ? `${Math.min(...pass)}–${Math.max(...pass)} mo` : 'none',
+     note:'ahead of unemployment moves'},
+    {label:'Latest confidence reading', value: fmt(sent.value,1), note:`index, ${sent.date}`},
+    {label:'Latest unemployment', value: fmt(un.value,1)+'%', note:un.date},
   ];
-  document.getElementById('tiles').innerHTML = tiles.map(t => `
-    <div class="tile">
-      <span class="label">${t.label}</span>
-      <span class="value">${t.value}</span>
-      <span class="note">${t.note}</span>
-    </div>`).join('');
-}
-
-function renderFinding(){
-  const un = strongestRow('UNRATE');
-  const gdp = strongestRow('GDP');
-  const unSig = sigCount('UNRATE'), gdpSig = sigCount('GDP');
-  const unStrongSig = un.granger_p_value < 0.05;
-
-  let text = `Sentiment's strongest co-movement with <b>unemployment</b> shows up at a `
-    + `<b>${un.lag_months}-month</b> lead (r = ${fmt(un.cross_correlation,2)}), but that particular lag `
-    + (unStrongSig
-        ? `is also statistically significant (p = ${fmt(un.granger_p_value,3)}).`
-        : `is <b>not</b> statistically significant (p = ${fmt(un.granger_p_value,3)}).`)
-    + ` Across all four lags, ${unSig} of 4 clear the 0.05 threshold. `
-    + `For <b>GDP</b>, the strongest co-movement is at ${gdp.lag_months} month${gdp.lag_months===1?'':'s'} `
-    + `(r = ${fmt(gdp.cross_correlation,2)}, p = ${fmt(gdp.granger_p_value,3)}), and ${gdpSig} of 4 lags are significant.`;
-
-  if (!unStrongSig || unSig < 4 || gdpSig < 4) {
-    text += ` <b>The two measures disagree</b>, which is the honest headline: the lag where the lines track each other`
-      + ` most closely is not always the lag that carries real predictive information. Correlation shows shape;`
-      + ` Granger causality asks whether knowing the past actually helps — and those are different questions.`;
-  }
-  document.getElementById('finding').innerHTML = text;
+  document.getElementById('tiles').innerHTML = tiles.map(t=>`
+    <div class="tile"><span class="label">${t.label}</span>
+    <span class="value">${t.value}</span><span class="note">${t.note}</span></div>`).join('');
 }
 
 function renderNarrative(){
-  if (!DATA.narrative) return;
+  if(!DATA.narrative) return;
   const n = DATA.narrative;
   document.getElementById('narrative-slot').innerHTML = `
-    <div class="card">
-      <span class="label" style="font-size:.76rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;">
-        Plain-language reading — written by ${n.model}
-      </span>
-      <p style="font-size:1.02rem;font-weight:600;margin:8px 0 10px;">${n.headline}</p>
+    <div class="card" style="margin-bottom:32px;">
+      <p class="eyebrow" style="margin-bottom:8px;">In plain language</p>
+      <p style="font-size:1.05rem;font-weight:600;margin:0 0 10px;">${n.headline}</p>
       <p style="margin:0;color:var(--ink-2);">${n.narrative}</p>
     </div>`;
 }
 
 /* ---------- charts ---------- */
 function drawCorr(){
-  const traces = ['UNRATE','GDP'].map(t => ({
+  const traces = ['UNRATE','GDP'].map(t=>({
     type:'bar',
-    name: t === 'UNRATE' ? 'Unemployment' : 'GDP',
-    x: rowsFor(t).map(r => r.lag_months + ' mo'),
-    y: rowsFor(t).map(r => r.cross_correlation),
+    name: t==='UNRATE' ? 'Unemployment' : 'Economic growth',
+    x: rowsFor(t).map(r=>r.lag_months+' mo'),
+    y: rowsFor(t).map(r=>Math.abs(r.cross_correlation)),
+    customdata: rowsFor(t).map(r=>[r.cross_correlation, r.granger_p_value]),
     marker:{color:colorFor(t), cornerradius:4},
-    hovertemplate:'%{fullData.name}, %{x} lead<br>r = %{y:.3f}<extra></extra>',
+    hovertemplate:'%{fullData.name} · %{x} ahead<br>correlation %{customdata[0]:.2f}<br>evidence test %{customdata[1]:.3f}<extra></extra>',
   }));
   Plotly.newPlot('corr-plot', traces, baseLayout({
-    title:{text:'Cross-correlation with sentiment', font:{size:13, color:tok('--ink-1')}, x:0, xanchor:'left'},
-    showlegend:true,
-    legend:{orientation:'h', y:-0.18, x:0, font:{size:11}},
-    bargap:0.35, bargroupgap:0.08,
-    height:300,
-    xaxis:axis({title:{text:'sentiment measured this far ahead', font:{size:11}}}),
-    yaxis:axis({title:{text:'correlation', font:{size:11}}, zeroline:true, zerolinewidth:1}),
+    title:{text:'Strength of link with consumer confidence', font:{size:13,color:tok('--ink-1')}, x:0, xanchor:'left'},
+    showlegend:true, legend:{orientation:'h', y:-0.2, x:0, font:{size:11}},
+    bargap:0.35, bargroupgap:0.08, height:310,
+    xaxis:axis({title:{text:'how far ahead confidence was measured', font:{size:11}}}),
+    yaxis:axis({title:{text:'strength (0 = none, 1 = perfect)', font:{size:11}}, range:[0,0.55]}),
   }), PLOT_CONFIG);
+
+  const best = strongestRow('UNRATE');
+  document.getElementById('corr-caption').innerHTML =
+    `All of these are <em>inverse</em> relationships: higher confidence goes with <em>lower</em> unemployment later, and vice versa. `
+    + `Bar height shows how strong that link is, ignoring direction. The tallest bar — unemployment at ${best.lag_months} months — `
+    + `is ${fmt(Math.abs(best.cross_correlation),2)}, which counts as a moderate relationship.`;
 }
 
-function drawPval(){
-  const traces = ['UNRATE','GDP'].map(t => ({
-    type:'scatter', mode:'markers',
-    name: t === 'UNRATE' ? 'Unemployment' : 'GDP',
-    x: rowsFor(t).map(r => r.lag_months + ' mo'),
-    y: rowsFor(t).map(r => r.granger_p_value),
-    marker:{color:colorFor(t), size:11, line:{color:tok('--surface'), width:2}},
-    hovertemplate:'%{fullData.name}, %{x} lead<br>p = %{y:.4f}<extra></extra>',
-  }));
-  Plotly.newPlot('pval-plot', traces, baseLayout({
-    title:{text:'Granger causality p-value', font:{size:13, color:tok('--ink-1')}, x:0, xanchor:'left'},
-    showlegend:true,
-    legend:{orientation:'h', y:-0.18, x:0, font:{size:11}},
-    height:300,
-    xaxis:axis({title:{text:'sentiment measured this far ahead', font:{size:11}}}),
-    yaxis:axis({
-      type:'log', title:{text:'p-value (log)', font:{size:11}},
-      tickvals:[0.001,0.01,0.05,0.1,1], ticktext:['0.001','0.01','0.05','0.1','1'],
-    }),
-    shapes:[{
-      type:'line', xref:'paper', x0:0, x1:1, yref:'y', y0:Math.log10(0.05), y1:Math.log10(0.05),
-      line:{color:tok('--axis'), width:1},
-    }],
-    annotations:[{
-      xref:'paper', x:1, xanchor:'right', yref:'y', y:Math.log10(0.05), yanchor:'bottom',
-      text:'significance threshold 0.05', showarrow:false,
-      font:{size:10, color:tok('--ink-muted')},
-    }],
-  }), PLOT_CONFIG);
-}
-
-function renderTable(){
-  const rows = DATA.lag.results.slice().sort((a,b) =>
-    a.target_indicator.localeCompare(b.target_indicator) || a.lag_months - b.lag_months);
-  const body = rows.map(r => {
-    const sig = r.granger_p_value < 0.05;
-    const name = r.target_indicator === 'UNRATE' ? 'Unemployment' : 'GDP';
-    return `<tr>
-      <td><span class="swatch" style="background:${colorFor(r.target_indicator)}"></span>${name}</td>
-      <td>${r.lag_months}</td>
-      <td>${fmt(r.cross_correlation,3)}</td>
-      <td>${fmt(r.granger_p_value,4)}</td>
-      <td class="${sig?'yes':'no'}">${sig?'yes':'no'}</td>
-      <td class="no">${r.strongest_lag_flag?'strongest r':''}</td>
-    </tr>`;
+function renderEvidence(){
+  const html = ['UNRATE','GDP'].map(t=>{
+    const name = t==='UNRATE' ? 'Unemployment' : 'Economic growth (GDP)';
+    const n = passingRows(t).length;
+    const pills = rowsFor(t).map(r=>{
+      const ok = r.granger_p_value < 0.05;
+      return `<span class="ev-pill ${ok?'pass':'fail'}">${ok?'✓':'✕'} ${r.lag_months} mo</span>`;
+    }).join('');
+    return `<div class="ev-card">
+      <div class="ev-title"><span class="swatch" style="background:${colorFor(t)}"></span>${name}</div>
+      <p class="ev-sub">${n} of 4 lead times pass the evidence test</p>
+      <div class="ev-row">${pills}</div>
+    </div>`;
   }).join('');
-  document.getElementById('lag-table').innerHTML = `
-    <caption>Every number behind the two charts above.</caption>
-    <thead><tr>
-      <th>Target</th><th>Lead (months)</th><th>Correlation</th>
-      <th>Granger p</th><th>Significant</th><th></th>
-    </tr></thead><tbody>${body}</tbody>`;
+  document.getElementById('evidence').innerHTML = html;
 }
 
 function drawLead(){
-  const byId = seriesByIdMap();
-  const sent = byId.UMCSENT.observations;
-  const un = byId.UNRATE.observations;
+  const m = seriesMap();
+  const sent = m.UMCSENT.observations, un = m.UNRATE.observations;
   const traces = [
-    {
-      type:'scatter', mode:'lines', name:'Consumer sentiment',
-      x: sent.map(o => shiftIso(o.date, shiftMonths)),
-      y: sent.map(o => o.value),
-      line:{color:colorFor('UMCSENT'), width:2},
-      xaxis:'x', yaxis:'y',
-      hovertemplate:'Sentiment %{y:.1f}<extra></extra>',
-    },
-    {
-      type:'scatter', mode:'lines', name:'Unemployment rate',
-      x: un.map(o => o.date),
-      y: un.map(o => o.value),
-      line:{color:colorFor('UNRATE'), width:2},
-      xaxis:'x', yaxis:'y2',
-      hovertemplate:'Unemployment %{y:.1f}%<extra></extra>',
-    },
+    {type:'scatter', mode:'lines', name:'Consumer confidence',
+     x: sent.map(o=>shiftIso(o.date, shiftMonths)), y: sent.map(o=>o.value),
+     line:{color:colorFor('UMCSENT'), width:2}, xaxis:'x', yaxis:'y',
+     hovertemplate:'Confidence %{y:.1f}<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'Unemployment',
+     x: un.map(o=>o.date), y: un.map(o=>o.value),
+     line:{color:colorFor('UNRATE'), width:2}, xaxis:'x', yaxis:'y2',
+     hovertemplate:'Unemployment %{y:.1f}%<extra></extra>'},
   ];
   Plotly.newPlot('lead-plot', traces, baseLayout({
     grid:{rows:2, columns:1, pattern:'coupled', roworder:'top to bottom', ygap:0.14},
-    height:420,
-    hovermode:'x unified',
-    showlegend:true,
-    legend:{orientation:'h', y:1.13, x:0, font:{size:11}},
-    margin:{l:52,r:16,t:50,b:40},
+    height:430, hovermode:'x unified',
+    showlegend:true, legend:{orientation:'h', y:1.12, x:0, font:{size:11}},
+    margin:{l:54,r:16,t:50,b:40},
     xaxis:axis({}),
-    yaxis:axis({title:{text:'sentiment index', font:{size:11}}}),
+    yaxis:axis({title:{text:'confidence index', font:{size:11}}}),
     yaxis2:axis({title:{text:'unemployment %', font:{size:11}}}),
   }), PLOT_CONFIG);
 }
 
 function drawGrid6(){
   const host = document.getElementById('grid6');
-  host.innerHTML = DATA.indicators.series.map(s =>
-    `<div class="card" style="padding:14px;">
-       <div id="mini-${s.series_id}" class="plot"></div>
-     </div>`).join('');
-  DATA.indicators.series.forEach(s => {
-    const color = colorFor(s.series_id);
+  host.innerHTML = DATA.indicators.series.map(s=>{
+    const last = s.observations.at(-1);
+    const yoy = last.value_yoy_change;
+    const unit = UNITS[s.series_id] || '';
+    const arrow = (yoy===null||yoy===undefined) ? '' : (yoy>0?'▲':(yoy<0?'▼':'–'));
+    const yoyTxt = (yoy===null||yoy===undefined) ? 'no year-ago comparison'
+      : `${arrow} ${fmt(Math.abs(yoy),1)}${unit} vs a year earlier`;
+    return `<div class="card" style="padding:15px;">
+      <div class="mini-head">
+        <span class="mini-name">${FRIENDLY[s.series_id] || s.indicator_name}</span>
+        <span class="mini-val">${fmt(last.value,1)}${unit}</span>
+      </div>
+      <div class="mini-meta">${yoyTxt} · ${last.date}</div>
+      <div id="mini-${s.series_id}" class="plot"></div>
+    </div>`;
+  }).join('');
+
+  DATA.indicators.series.forEach(s=>{
     Plotly.newPlot(`mini-${s.series_id}`, [{
       type:'scatter', mode:'lines',
-      x: s.observations.map(o => o.date),
-      y: s.observations.map(o => o.value),
-      line:{color, width:1.8},
+      x:s.observations.map(o=>o.date), y:s.observations.map(o=>o.value),
+      line:{color:colorFor(s.series_id), width:1.8},
       hovertemplate:'%{x|%b %Y}<br>%{y}<extra></extra>',
     }], baseLayout({
-      title:{text:s.indicator_name, font:{size:12, color:tok('--ink-1')}, x:0, xanchor:'left'},
-      height:170,
-      margin:{l:42,r:10,t:30,b:28},
+      height:130, margin:{l:40,r:10,t:8,b:26},
       xaxis:axis({tickfont:{size:10, color:tok('--ink-muted')}}),
       yaxis:axis({tickfont:{size:10, color:tok('--ink-muted')}}),
     }), PLOT_CONFIG);
   });
 }
 
+function renderTable(){
+  const rows = DATA.lag.results.slice().sort((a,b)=>
+    a.target_indicator.localeCompare(b.target_indicator) || a.lag_months-b.lag_months);
+  const body = rows.map(r=>{
+    const ok = r.granger_p_value < 0.05;
+    const name = r.target_indicator==='UNRATE' ? 'Unemployment' : 'Economic growth';
+    return `<tr>
+      <td><span class="swatch" style="background:${colorFor(r.target_indicator)}"></span>${name}</td>
+      <td>${r.lag_months}</td>
+      <td>${fmt(r.cross_correlation,2)}</td>
+      <td>${fmt(r.granger_p_value,3)}</td>
+      <td class="${ok?'yes':'no-t'}">${ok?'passes':'fails'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('lag-table').innerHTML = `
+    <thead><tr>
+      <th>What it predicts</th><th>Months ahead</th><th>Correlation</th>
+      <th>Evidence test</th><th>Result</th>
+    </tr></thead><tbody>${body}</tbody>`;
+}
+
 function renderShiftControl(){
   const seg = document.getElementById('shift-seg');
-  seg.innerHTML = SHIFTS.map(m =>
-    `<button type="button" data-m="${m}" aria-pressed="${m===shiftMonths}">${m===0?'no shift':m+' mo'}</button>`
-  ).join('');
-  seg.querySelectorAll('button').forEach(b => {
-    b.addEventListener('click', () => {
+  seg.innerHTML = SHIFTS.map(m=>
+    `<button type="button" data-m="${m}" aria-pressed="${m===shiftMonths}">${m===0?'nothing':m+' mo'}</button>`).join('');
+  seg.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', ()=>{
       shiftMonths = Number(b.dataset.m);
-      seg.querySelectorAll('button').forEach(x =>
-        x.setAttribute('aria-pressed', String(Number(x.dataset.m) === shiftMonths)));
+      seg.querySelectorAll('button').forEach(x=>
+        x.setAttribute('aria-pressed', String(Number(x.dataset.m)===shiftMonths)));
       drawLead();
     });
   });
 }
 
-function drawAll(){
-  drawCorr(); drawPval(); drawLead(); drawGrid6();
-}
+function drawAll(){ drawCorr(); drawLead(); drawGrid6(); }
 
 async function init(){
-  try {
+  try{
     const [ind, lag] = await Promise.all([
-      fetch('data/indicators.json').then(r => r.json()),
-      fetch('data/lag_analysis.json').then(r => r.json()),
+      fetch('data/indicators.json').then(r=>r.json()),
+      fetch('data/lag_analysis.json').then(r=>r.json()),
     ]);
-    DATA.indicators = ind;
-    DATA.lag = lag;
-    try {
+    DATA.indicators = ind; DATA.lag = lag;
+    try{
       const r = await fetch('data/narrative.json');
-      if (r.ok) DATA.narrative = await r.json();
-    } catch (e) { /* narrative is optional */ }
-  } catch (e) {
-    document.getElementById('stamp').textContent = 'Could not load the dashboard data.';
-    document.getElementById('finding').textContent =
-      'The data files failed to load. If you are opening this file directly, serve it over HTTP instead.';
+      if(r.ok) DATA.narrative = await r.json();
+    }catch(e){ /* optional */ }
+  }catch(e){
+    document.getElementById('stamp').textContent = 'Could not load the data.';
+    document.getElementById('verdict').textContent =
+      'The data files failed to load. If you opened this file directly, serve it over HTTP instead.';
     return;
   }
 
   const built = new Date(DATA.indicators.generated_at);
   document.getElementById('stamp').textContent =
-    `Data refreshed ${built.toISOString().slice(0,10)} · analysis covers each series' full history · charts from ${DATA.indicators.start_date.slice(0,4)}`;
-  document.getElementById('start-date').textContent = DATA.indicators.start_date.slice(0,4);
+    `Updated automatically · data as of ${built.toISOString().slice(0,10)}`;
 
+  renderVerdict();
   renderTiles();
-  renderFinding();
   renderNarrative();
+  renderEvidence();
   renderTable();
   renderShiftControl();
   drawAll();
 
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    renderTable();
-    drawAll();
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
+    renderEvidence(); renderTable(); drawAll();
   });
 }
 

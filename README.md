@@ -2,7 +2,7 @@
 
 **Does consumer sentiment lead the economy?** An end-to-end analytics pipeline that tests whether how people *feel* about the economy actually predicts what it does next — using Federal Reserve data, modeled in a cloud warehouse, tested with real statistics, and published as a self-updating dashboard.
 
-**[→ Live dashboard](https://asjg20.github.io/economic-pulse/)**
+**[→ Live dashboard](https://asjg20.github.io/economic-pulse/)** — the plain-language version of the finding, written for a non-technical reader. This README is the technical write-up: method, architecture, and caveats.
 
 ---
 
@@ -22,6 +22,26 @@ Sentiment does carry real predictive information about unemployment — but not 
 | **GDP** | 1 month (r = −0.32) | 3, 6, 12 months (3 of 4) |
 
 The two measures disagree, and that disagreement is the interesting result. For unemployment, the lag with the strongest raw correlation (12 months, r = −0.43) is the one lag that *fails* the significance test (p = 0.054), while the shorter leads that correlate less strongly all pass it. Correlation describes how similarly two series move; Granger causality asks whether knowing the past actually improves a forecast. Those are different questions, and here they give different answers — which is exactly why the project runs both instead of stopping at a correlation.
+
+## Method
+
+Implemented in [`analyze/lead_lag_analysis.py`](analyze/lead_lag_analysis.py).
+
+**Alignment.** All three series are reindexed onto a common month-start grid spanning their full overlap. `UMCSENT` and `UNRATE` are natively monthly. `GDP` is quarterly and is forward-filled across the three months of each quarter, so a lag expressed in months is meaningful for both targets.
+
+**Cross-correlation.** For each target *y* and each lag *k* ∈ {1, 3, 6, 12}, the sentiment series is shifted forward by *k* months and the Pearson correlation is taken over the pairs that survive:
+
+```
+r_k = corr( UMCSENT[t − k], y[t] )
+```
+
+A negative `r_k` means high sentiment *k* months ago is associated with a low value of the target now. `strongest_lag_flag` marks the lag with the largest |r| per target — a descriptive maximum, not a significance ranking, which is precisely where the two measures part company here.
+
+**Granger causality.** For the same target and lag, `statsmodels.tsa.stattools.grangercausalitytests` fits two nested models — one regressing *y* on its own *k* lags, one adding *k* lags of sentiment — and reports an F-test on the added terms. The reported figure is the `ssr_ftest` p-value. Column order matters: the frame is passed as `[target, sentiment]`, which tests whether sentiment Granger-causes the target rather than the reverse. Each lag is tested individually (`maxlag=[k]`) rather than cumulatively.
+
+**Interpretation.** Cross-correlation measures co-movement at a fixed offset. Granger causality asks a narrower question — whether past sentiment reduces forecast error for *y* beyond *y*'s own history. Neither establishes a causal mechanism; Granger causality is a statement about predictive information only. The two answers diverge in this data, and the divergence is reported rather than smoothed over.
+
+**Sample.** Each test runs on the full overlapping history of the series involved — back to 1948 for `UNRATE`, 1947 for `GDP`, and 1952 (continuous from 1978) for `UMCSENT`. The dashboard's charts are windowed to 1990 onward for payload size; the statistics are not.
 
 ## Architecture
 
