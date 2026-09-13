@@ -211,7 +211,7 @@ const FRIENDLY = {
   UMCSENT:'Consumer confidence', UNRATE:'Unemployment', GDP:'Economic growth (GDP)',
   CPIAUCSL:'Inflation (CPI)', FEDFUNDS:'Interest rate', T10Y2Y:'Yield curve gap'
 };
-const UNITS = {UMCSENT:'', UNRATE:'%', GDP:'', CPIAUCSL:'', FEDFUNDS:'%', T10Y2Y:'%'};
+const UNITS = {UMCSENT:'', UNRATE:'%', CPIAUCSL:'', FEDFUNDS:'%', T10Y2Y:'%'};
 
 let DATA = {indicators:null, lag:null, narrative:null};
 let shiftMonths = 0;
@@ -382,17 +382,25 @@ function drawLead(){
 const FEATURED_IDS = ['UMCSENT','UNRATE'];
 const HIDDEN_IDS = ['T10Y2Y'];
 
+// GDP arrives from FRED in billions of nominal dollars (e.g. 32486.1), which
+// reads as a bug at KPI-card scale. Trillions with a $ prefix is what a
+// stakeholder expects to see; every other series is already in its natural unit.
+function formatValue(seriesId, value){
+  if (value === null || value === undefined) return 'n/a';
+  if (seriesId === 'GDP') return `$${fmt(value/1000, 1)}T`;
+  return `${fmt(value,1)}${UNITS[seriesId] || ''}`;
+}
+
 function miniCardHtml(s){
   const last = s.observations.at(-1);
   const yoy = last.value_yoy_change;
-  const unit = UNITS[s.series_id] || '';
   const arrow = (yoy===null||yoy===undefined) ? '' : (yoy>0?'▲':(yoy<0?'▼':'–'));
   const yoyTxt = (yoy===null||yoy===undefined) ? 'no year-ago comparison'
-    : `${arrow} ${fmt(Math.abs(yoy),1)}${unit} vs a year earlier`;
+    : `${arrow} ${formatValue(s.series_id, Math.abs(yoy))} vs a year earlier`;
   return `<div class="card">
     <div class="mini-head">
       <span class="mini-name">${FRIENDLY[s.series_id] || s.indicator_name}</span>
-      <span class="mini-val">${fmt(last.value,1)}${unit}</span>
+      <span class="mini-val">${formatValue(s.series_id, last.value)}</span>
     </div>
     <div class="mini-meta">${yoyTxt} · ${last.date}</div>
     <div id="mini-${s.series_id}" class="plot"></div>
@@ -400,11 +408,12 @@ function miniCardHtml(s){
 }
 
 function drawMiniChart(s, height){
+  const isGdp = s.series_id === 'GDP';
   Plotly.newPlot(`mini-${s.series_id}`, [{
     type:'scatter', mode:'lines',
-    x:s.observations.map(o=>o.date), y:s.observations.map(o=>o.value),
+    x:s.observations.map(o=>o.date), y:s.observations.map(o=> isGdp ? o.value/1000 : o.value),
     line:{color:colorFor(s.series_id), width:1.8},
-    hovertemplate:'%{x|%b %Y}<br>%{y}<extra></extra>',
+    hovertemplate: isGdp ? '%{x|%b %Y}<br>$%{y:.1f}T<extra></extra>' : '%{x|%b %Y}<br>%{y}<extra></extra>',
   }], baseLayout({
     height, margin:{l:40,r:10,t:8,b:26},
     xaxis:axis({tickfont:{size:10, color:tok('--ink-muted')}}),
