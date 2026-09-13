@@ -1,23 +1,22 @@
 # 📊 Economic Pulse: An End-to-End ELT Pipeline Project
 
-**Does consumer confidence lead the economy?** This project tests whether how people *feel* about the economy actually predicts what it does next — using Federal Reserve data, modeled in a cloud warehouse, tested with real statistics, and published as a dashboard that updates itself every month.
+**Does consumer confidence lead the economy?**
+This project tests whether how people feel about the economy actually predicts what it does next.
 
 [![View Live Dashboard](https://img.shields.io/badge/→_View_Live_Dashboard-2E86AB?style=for-the-badge)](https://asjg20.github.io/economic-pulse/)
 
-The dashboard is the plain-language version of the finding, written for a non-technical reader. This README is the technical write-up.
+CLICK HERE TO VIEW DASHBOARD ! 
 
 ## Objective
 
-Consumer sentiment surveys ask people how they feel about the economy — but does that feeling actually predict what they go on to do? Consumer spending is roughly 70% of U.S. GDP, so if sentiment reliably *leads* unemployment and GDP rather than just reacting to them, it's a genuinely useful early-warning signal: sentiment data comes out faster and cheaper than "hard" economic data.
+In this project, I implemented an end-to-end ELT pipeline that consists of several stages:
 
-This project answers that question end to end:
-1. Extracted six economic indicators from the FRED API and loaded them into a BigQuery warehouse.
-2. Modeled and tested the data with dbt (staging → marts).
-3. Tested the actual hypothesis with cross-correlation and Granger causality (`statsmodels`) — not just charted, tested.
+1. Extracted Data from the FRED API and loaded them into a BigQuery warehouse.
+2. Modeled and tested the data with dbt.
+3. Tested the actual hypothesis with cross-correlation and Granger causality.
 4. Orchestrated the whole chain on a monthly schedule with GitHub Actions, so it re-runs itself with no manual step.
-5. Published the result as a live, self-updating dashboard on GitHub Pages.
-
-It's also, underneath the economics, an attitude–behavior question: does a self-reported attitude actually predict downstream behavior? That's the same validity question I study in experimental psychology — I'm just asking it of macroeconomic data instead of a lab survey.
+5. Built a Claude API narrative step that translates the statistical result into a plain-language summary (Currently turned off)
+6. Published the result as a live, self-updating dashboard on GitHub Pages.
 
 ## Table of Contents
 
