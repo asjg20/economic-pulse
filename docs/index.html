@@ -144,8 +144,8 @@
         <p>Confidence and unemployment move <strong>opposite</strong> each other. When people feel worse about the economy, unemployment tends to rise in the months that follow.</p>
       </div>
       <div class="point">
-        <h3>How useful is it?</h3>
-        <p>It's a <strong>directional hint, not a forecast</strong>. The link is real and measurable, but moderate: enough to inform a view, not enough to predict a number.</p>
+        <h3>How bad is that reading, really?</h3>
+        <p id="context-text">Loading…</p>
       </div>
       <div class="point">
         <h3>Where's the catch?</h3>
@@ -285,6 +285,28 @@ function renderTiles(){
   document.getElementById('tiles').innerHTML = tiles.map(t=>`
     <div class="tile"><span class="label">${t.label}</span>
     <span class="value">${t.value}</span><span class="note">${t.note}</span></div>`).join('');
+}
+
+function monthYear(iso){
+  return new Date(iso+'T00:00:00Z').toLocaleDateString('en-US', {month:'long', year:'numeric', timeZone:'UTC'});
+}
+
+function renderContext(){
+  const vals = seriesMap().UMCSENT.observations.filter(o => o.value !== null);
+  const latest = vals.at(-1);
+  const low = vals.reduce((a,b) => b.value < a.value ? b : a);
+  const mean = vals.reduce((sum,o) => sum + o.value, 0) / vals.length;
+  const atOrBelow = vals.filter(o => o.value <= latest.value).length;
+  const pct = Math.round(100 * atOrBelow / vals.length);
+  const nearRecordLow = latest.value <= low.value * 1.03;
+
+  const text = nearRecordLow
+    ? `At ${fmt(latest.value,1)}, this is close to the <strong>lowest reading on record</strong> for this series. The floor was ${fmt(low.value,1)}, hit in ${monthYear(low.date)}. `
+      + `Confidence has typically run closer to ${fmt(mean,0)} over this period, so today's level is well outside the normal range.`
+    : `At ${fmt(latest.value,1)}, this ranks among the <strong>weakest readings on record</strong> for this series: only about ${pct}% of months have been this low or lower. `
+      + `Confidence has typically run closer to ${fmt(mean,0)} over this period, so today's level is meaningfully below normal.`;
+
+  document.getElementById('context-text').innerHTML = text;
 }
 
 function renderNarrative(){
@@ -459,6 +481,7 @@ async function init(){
 
   renderVerdict();
   renderTiles();
+  renderContext();
   renderNarrative();
   renderEvidence();
   renderTable();
