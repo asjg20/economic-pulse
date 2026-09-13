@@ -18,4 +18,10 @@ Confirmed: run [34738425932](https://github.com/asjg20/economic-pulse/actions/ru
 
 Worth remembering: the *first* CI run failed at `pip install`, and caught a real bug local dev had masked — `requirements.txt` pinned `python-dotenv==1.0.1` while `dbt-core` 1.12.4 requires `>=1.2`. The venv already had 1.2.3, so a clean resolve had never run locally. If a pin is ever edited by hand, check it with `pip install --dry-run --ignore-installed -r requirements.txt` rather than trusting that the venv works.
 
-Next up: Phase 5, the AI narrative step (`ai/generate_narrative.py`) wired in as an additional workflow step.
+**Phase 5: AI layer** — built, but deliberately left switched off. `ai/generate_narrative.py` sends only the 8 lag-analysis rows plus the latest reading per indicator (~2,700 characters, no raw observations) to `claude-sonnet-5`, and gets back a `headline` + ~150-word `narrative` via a Pydantic structured output. Anti-hallucination is handled in the system prompt: every number must appear in the payload, no outside knowledge, no forecasting, an explicit p-value threshold, and a requirement to call out where correlation strength and Granger significance disagree. The payload carries `field_notes` defining each column so `strongest_lag_flag` can't be misread as "most significant," and `narrative.json` stores the exact inputs next to the output so any figure can be audited.
+
+**Not enabled, by choice:** the Anthropic API needs a prepaid minimum (~$5) while this would use ~2¢/month, which isn't worth it for a project billed as zero-cost. The workflow step carries `if: env.ANTHROPIC_API_KEY != ''`, so it skips cleanly (grey, not red) until a secret exists — adding one turns the feature on with no code change. Everything up to the API boundary is verified; the call itself has never run.
+
+Note: the spec's "zero-cost" claim and its Claude API layer are in tension. The README should either present the AI feature as optional, or drop the zero-cost framing.
+
+Next up: Phase 6, the GitHub Pages dashboard (`docs/index.html`) — indicator charts plus a correlation-by-lag visual, with the narrative card rendering only when `narrative.json` is present.

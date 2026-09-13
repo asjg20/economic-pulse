@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       GCP_PROJECT_ID: economic-pulse
       GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-service-account.json
       BQ_DATASET: raw
@@ -61,6 +62,14 @@ jobs:
       - name: Test - lag analysis results
         working-directory: dbt
         run: dbt test --select source:marts.fct_sentiment_lag_analysis
+
+      # Optional and off unless an ANTHROPIC_API_KEY secret exists - the pipeline is
+      # fully functional without it. When enabled, a Claude API outage still can't cost
+      # us the monthly data refresh, since this is derived commentary rather than data.
+      - name: Narrate - plain-language reading of the results
+        if: env.ANTHROPIC_API_KEY != ''
+        continue-on-error: true
+        run: python ai/generate_narrative.py
 
       - name: Check source freshness
         working-directory: dbt
