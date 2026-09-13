@@ -91,13 +91,20 @@
   .seg button[aria-pressed="true"]{background:var(--s1);color:#fff;font-weight:600;}
   .seg button:focus-visible{outline:2px solid var(--s1);outline-offset:-2px;}
 
-  .grid6{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
-  @media (max-width:860px){.grid6{grid-template-columns:1fr 1fr;}}
-  @media (max-width:560px){.grid6{grid-template-columns:1fr;}}
+  .grid-featured{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
+  @media (max-width:640px){.grid-featured{grid-template-columns:1fr;}}
+  .grid-featured .card{padding:22px;}
+  .grid-context{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-top:24px;border-top:1px solid var(--border);}
+  @media (max-width:760px){.grid-context{grid-template-columns:1fr 1fr;}}
+  @media (max-width:480px){.grid-context{grid-template-columns:1fr;}}
+  .grid-context .card{padding:15px;}
   .mini-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:2px;}
   .mini-name{font-size:.85rem;font-weight:600;}
   .mini-val{font-size:1.05rem;font-weight:600;}
   .mini-meta{font-size:.76rem;color:var(--ink-muted);margin-bottom:6px;}
+  .grid-featured .mini-name{font-size:1.05rem;}
+  .grid-featured .mini-val{font-size:2rem;}
+  .grid-featured .mini-meta{font-size:.86rem;margin-bottom:10px;}
 
   details{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0 20px;}
   summary{cursor:pointer;padding:16px 0;font-weight:600;font-size:.97rem;list-style-position:inside;}
@@ -134,8 +141,9 @@
 
   <section>
     <h2>Where things stand now</h2>
-    <p class="lede">Consumer confidence and unemployment, the two series this analysis is about, plus four more that round out the picture. Latest reading and the change over the past year.</p>
-    <div class="grid6" id="grid6"></div>
+    <p class="lede">Consumer confidence and unemployment, the two series this analysis is about, plus two more that round out the picture. Latest reading and the change over the past year.</p>
+    <div class="grid-featured" id="grid-featured"></div>
+    <div class="grid-context" id="grid-context"></div>
   </section>
 
   <div id="narrative-slot"></div>
@@ -387,37 +395,49 @@ function drawLead(){
   }), PLOT_CONFIG);
 }
 
-function drawGrid6(){
-  const host = document.getElementById('grid6');
-  host.innerHTML = DATA.indicators.series.map(s=>{
-    const last = s.observations.at(-1);
-    const yoy = last.value_yoy_change;
-    const unit = UNITS[s.series_id] || '';
-    const arrow = (yoy===null||yoy===undefined) ? '' : (yoy>0?'▲':(yoy<0?'▼':'–'));
-    const yoyTxt = (yoy===null||yoy===undefined) ? 'no year-ago comparison'
-      : `${arrow} ${fmt(Math.abs(yoy),1)}${unit} vs a year earlier`;
-    return `<div class="card" style="padding:15px;">
-      <div class="mini-head">
-        <span class="mini-name">${FRIENDLY[s.series_id] || s.indicator_name}</span>
-        <span class="mini-val">${fmt(last.value,1)}${unit}</span>
-      </div>
-      <div class="mini-meta">${yoyTxt} · ${last.date}</div>
-      <div id="mini-${s.series_id}" class="plot"></div>
-    </div>`;
-  }).join('');
+const FEATURED_IDS = ['UMCSENT','UNRATE'];
+const HIDDEN_IDS = ['T10Y2Y'];
 
-  DATA.indicators.series.forEach(s=>{
-    Plotly.newPlot(`mini-${s.series_id}`, [{
-      type:'scatter', mode:'lines',
-      x:s.observations.map(o=>o.date), y:s.observations.map(o=>o.value),
-      line:{color:colorFor(s.series_id), width:1.8},
-      hovertemplate:'%{x|%b %Y}<br>%{y}<extra></extra>',
-    }], baseLayout({
-      height:130, margin:{l:40,r:10,t:8,b:26},
-      xaxis:axis({tickfont:{size:10, color:tok('--ink-muted')}}),
-      yaxis:axis({tickfont:{size:10, color:tok('--ink-muted')}}),
-    }), PLOT_CONFIG);
-  });
+function miniCardHtml(s){
+  const last = s.observations.at(-1);
+  const yoy = last.value_yoy_change;
+  const unit = UNITS[s.series_id] || '';
+  const arrow = (yoy===null||yoy===undefined) ? '' : (yoy>0?'▲':(yoy<0?'▼':'–'));
+  const yoyTxt = (yoy===null||yoy===undefined) ? 'no year-ago comparison'
+    : `${arrow} ${fmt(Math.abs(yoy),1)}${unit} vs a year earlier`;
+  return `<div class="card">
+    <div class="mini-head">
+      <span class="mini-name">${FRIENDLY[s.series_id] || s.indicator_name}</span>
+      <span class="mini-val">${fmt(last.value,1)}${unit}</span>
+    </div>
+    <div class="mini-meta">${yoyTxt} · ${last.date}</div>
+    <div id="mini-${s.series_id}" class="plot"></div>
+  </div>`;
+}
+
+function drawMiniChart(s, height){
+  Plotly.newPlot(`mini-${s.series_id}`, [{
+    type:'scatter', mode:'lines',
+    x:s.observations.map(o=>o.date), y:s.observations.map(o=>o.value),
+    line:{color:colorFor(s.series_id), width:1.8},
+    hovertemplate:'%{x|%b %Y}<br>%{y}<extra></extra>',
+  }], baseLayout({
+    height, margin:{l:40,r:10,t:8,b:26},
+    xaxis:axis({tickfont:{size:10, color:tok('--ink-muted')}}),
+    yaxis:axis({tickfont:{size:10, color:tok('--ink-muted')}}),
+  }), PLOT_CONFIG);
+}
+
+function drawGrid6(){
+  const visible = DATA.indicators.series.filter(s => !HIDDEN_IDS.includes(s.series_id));
+  const featured = FEATURED_IDS.map(id => visible.find(s => s.series_id === id)).filter(Boolean);
+  const context = visible.filter(s => !FEATURED_IDS.includes(s.series_id));
+
+  document.getElementById('grid-featured').innerHTML = featured.map(miniCardHtml).join('');
+  document.getElementById('grid-context').innerHTML = context.map(miniCardHtml).join('');
+
+  featured.forEach(s => drawMiniChart(s, 200));
+  context.forEach(s => drawMiniChart(s, 130));
 }
 
 function renderTable(){
