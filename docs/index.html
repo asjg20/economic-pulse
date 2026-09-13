@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Economic Pulse — Does consumer confidence predict the economy?</title>
+<title>Economic Pulse: Does Consumer Confidence Predict the Economy?</title>
 <meta name="description" content="Do consumer confidence surveys predict unemployment and growth? A plain-language read of what Federal Reserve data actually shows.">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.0.1/plotly.min.js"></script>
 <style>
@@ -122,7 +122,7 @@
 
   <header>
     <p class="eyebrow">Economic Pulse</p>
-    <h1 id="page-title">Does consumer confidence predict the economy?</h1>
+    <h1 id="page-title">Does Consumer Confidence Predict the Economy?</h1>
     <p class="stamp" id="stamp">Loading…</p>
   </header>
 
@@ -136,7 +136,7 @@
 
   <section>
     <h2>The numbers</h2>
-    <p class="lede">Based on every month of Federal Reserve data going back to the 1940s — not just the period shown in the charts below.</p>
+    <p class="lede">Based on every month of Federal Reserve data going back to the 1940s, not just the period shown in the charts below.</p>
     <div class="tiles" id="tiles"></div>
     <div class="points">
       <div class="point">
@@ -145,7 +145,7 @@
       </div>
       <div class="point">
         <h3>How useful is it?</h3>
-        <p>It's a <strong>directional hint, not a forecast</strong>. The link is real and measurable, but moderate — enough to inform a view, not enough to predict a number.</p>
+        <p>It's a <strong>directional hint, not a forecast</strong>. The link is real and measurable, but moderate: enough to inform a view, not enough to predict a number.</p>
       </div>
       <div class="point">
         <h3>Where's the catch?</h3>
@@ -166,14 +166,14 @@
 
   <section>
     <h2>See it for yourself</h2>
-    <p class="lede">Confidence on top, unemployment below, sharing the same timeline. Slide confidence forward and watch whether its peaks and dips start landing on unemployment's — that shifting is exactly what the analysis does mathematically.</p>
+    <p class="lede">Confidence on top, unemployment below, sharing the same timeline. Slide confidence forward and watch whether its peaks and dips start landing on unemployment's. That shifting is exactly what the analysis does mathematically.</p>
     <div class="controls">
       <span class="lbl">Move confidence forward by:</span>
       <div class="seg" id="shift-seg" role="group" aria-label="Move confidence forward by"></div>
     </div>
     <div class="card">
       <div id="lead-plot" class="plot"></div>
-      <p class="caption">Two separate panels, each with its own scale — deliberately not one chart with two axes, which would let the picture imply a closeness that isn't in the numbers.</p>
+      <p class="caption">Two separate panels, each with its own scale. This is deliberately not one chart with two axes, which would let the picture imply a closeness that isn't in the numbers.</p>
     </div>
   </section>
 
@@ -192,13 +192,13 @@
       <p class="caption" style="padding-bottom:18px;">
         <strong>Correlation</strong> runs from 0 (no relationship) to −1 (a perfect opposite relationship); around −0.3 to −0.4 is a moderate link.
         <strong>Evidence test</strong> asks a stricter question: does knowing past confidence actually improve a forecast beyond what unemployment's own history already tells you? Below 0.05 is the conventional bar for "unlikely to be coincidence."
-        A result can score well on the first and still fail the second — which is what happens at the 12-month lead.
+        A result can score well on the first and still fail the second, which is what happens at the 12-month lead.
       </p>
     </details>
   </section>
 
   <footer>
-    <p>Built from <a href="https://fred.stlouisfed.org">Federal Reserve Economic Data</a>. The whole pipeline — pull, clean, test, analyse, publish — reruns itself on the 10th of each month, so these numbers stay current on their own. <a href="https://github.com/asjg20/economic-pulse">Technical write-up and source code</a>.</p>
+    <p>Built from <a href="https://fred.stlouisfed.org">Federal Reserve Economic Data</a>. The whole pipeline (pull, clean, test, analyse, publish) reruns itself on the 10th of each month, so these numbers stay current on their own. <a href="https://github.com/asjg20/economic-pulse">Technical write-up and source code</a>.</p>
   </footer>
 
 </div>
@@ -218,7 +218,7 @@ let shiftMonths = 0;
 
 const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const colorFor = id => SERIES_COLOR[id] ? tok(SERIES_COLOR[id]) : tok('--ink-muted');
-const fmt = (n,d) => (n===null||n===undefined) ? '—' : Number(n).toFixed(d);
+const fmt = (n,d) => (n===null||n===undefined) ? 'n/a' : Number(n).toFixed(d);
 
 function baseLayout(extra){
   return Object.assign({
@@ -263,7 +263,7 @@ function renderVerdict(){
 
   document.getElementById('verdict').textContent = pass.length
     ? `Somewhat. When people's confidence drops, unemployment tends to follow a few months later. It's a real pattern, just not a strong one.`
-    : 'Not reliably — the data does not support consumer confidence as an early signal here.';
+    : 'Not reliably. The data does not support consumer confidence as an early signal here.';
 
   document.getElementById('verdict-detail').innerHTML = pass.length
     ? `Falling confidence tends to precede rising unemployment, and that pattern holds up to statistical testing at ${pass.map(p=>p+'-month').join(', ')} lead times. `
@@ -320,7 +320,7 @@ function drawCorr(){
   const best = strongestRow('UNRATE');
   document.getElementById('corr-caption').innerHTML =
     `All of these are <em>inverse</em> relationships: higher confidence goes with <em>lower</em> unemployment later, and vice versa. `
-    + `Bar height shows how strong that link is, ignoring direction. The tallest bar — unemployment at ${best.lag_months} months — `
+    + `Bar height shows how strong that link is, ignoring direction. The tallest bar (unemployment at ${best.lag_months} months) `
     + `is ${fmt(Math.abs(best.cross_correlation),2)}, which counts as a moderate relationship.`;
 }
 
