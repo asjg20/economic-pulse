@@ -180,7 +180,7 @@
 
   <section>
     <h2>See it for yourself</h2>
-    <p class="lede">Confidence on top, unemployment below, sharing the same timeline. Slide confidence forward and watch whether its peaks and dips start landing on unemployment's. That shifting is exactly what the analysis does mathematically.</p>
+    <p class="lede">Confidence on top, unemployment below, sharing the same timeline. Click through the shift options and watch the deep confidence dip around 2008 move to the right. At "12 mo," it should land almost exactly under unemployment's own peak in late 2009: that near-year gap between the two is one concrete example of the lag this page is testing for.</p>
     <div class="controls">
       <span class="lbl">Move confidence forward by:</span>
       <div class="seg" id="shift-seg" role="group" aria-label="Move confidence forward by"></div>
@@ -374,6 +374,15 @@ function renderEvidence(){
 function drawLead(){
   const m = seriesMap();
   const sent = m.UMCSENT.observations, un = m.UNRATE.observations;
+
+  // Fixed to the real (unshifted) dates so the axis never autoscales to fit a
+  // shifted trace - otherwise a 12-month shift over 36 years of history just
+  // stretches the axis by ~3%, which reads as no change at all. Confidence's
+  // shifted tail clipping past "now" (unemployment's last date) is correct:
+  // that's exactly the portion with no future unemployment reading to compare against.
+  const xMin = sent[0].date < un[0].date ? sent[0].date : un[0].date;
+  const xMax = un.at(-1).date;
+
   const traces = [
     {type:'scatter', mode:'lines', name:'Consumer confidence',
      x: sent.map(o=>shiftIso(o.date, shiftMonths)), y: sent.map(o=>o.value),
@@ -385,13 +394,12 @@ function drawLead(){
      hovertemplate:'Unemployment %{y:.1f}%<extra></extra>'},
   ];
   Plotly.newPlot('lead-plot', traces, baseLayout({
-    grid:{rows:2, columns:1, pattern:'coupled', roworder:'top to bottom', ygap:0.14},
     height:430, hovermode:'x unified',
     showlegend:true, legend:{orientation:'h', y:1.12, x:0, font:{size:11}},
     margin:{l:54,r:16,t:50,b:40},
-    xaxis:axis({}),
-    yaxis:axis({title:{text:'confidence index', font:{size:11}}}),
-    yaxis2:axis({title:{text:'unemployment %', font:{size:11}}}),
+    xaxis:axis({range:[xMin, xMax], autorange:false}),
+    yaxis:axis({title:{text:'confidence index', font:{size:11}}, domain:[0.58,1]}),
+    yaxis2:axis({title:{text:'unemployment %', font:{size:11}}, domain:[0,0.42], anchor:'x'}),
   }), PLOT_CONFIG);
 }
 
