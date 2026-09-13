@@ -1,4 +1,4 @@
-# 📊 Economic Pulse: An End-to-End ELT Pipeline
+# 📊 Economic Pulse: An End-to-End ELT Pipeline Project
 
 **Does consumer confidence lead the economy?** This project tests whether how people *feel* about the economy actually predicts what it does next — using Federal Reserve data, modeled in a cloud warehouse, tested with real statistics, and published as a dashboard that updates itself every month.
 
