@@ -50,12 +50,12 @@ Six series from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.o
 ## Stack
 
 - **Language:** Python, SQL
-- **Extraction:** Python + `fredapi`
-- **Warehouse:** BigQuery (sandbox / free tier)
-- **Transformation:** dbt-core + `dbt-bigquery`
-- **Analysis:** `statsmodels`, `scipy`
+- **Extraction:** Python
+- **Warehouse:** BigQuery
+- **Transformation:** dbt
+- **Analysis:** statsmodels, scipy
 - **Orchestration:** GitHub Actions (monthly cron)
-- **Narrative** *(optional, disabled)*: Claude API
+- **Narrative:** Claude API *(optional, disabled)*
 - **Dashboard:** Plotly.js on GitHub Pages
 
 ## Pipeline Architecture
