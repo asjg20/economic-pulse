@@ -21,7 +21,7 @@ In this project, I implemented an end-to-end ELT pipeline that consists of sever
 ## Table of Contents
 
 - [Dataset Used](#dataset-used)
-- [Technologies](#technologies)
+- [Stack](#stack)
 - [Pipeline Architecture](#pipeline-architecture)
 - [Step 1: Extract](#step-1-extract)
 - [Step 2: Transform](#step-2-transform)
@@ -47,7 +47,7 @@ Six series from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.o
 | `FEDFUNDS` | Context — policy rate | Monthly |
 | `T10Y2Y` | Context — yield curve | Daily |
 
-## Technologies
+## Stack
 
 - **Language:** Python, SQL
 - **Extraction:** Python + `fredapi`
