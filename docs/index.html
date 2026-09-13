@@ -119,20 +119,20 @@
   <div id="narrative-slot"></div>
 
   <section>
-    <h2>What this means</h2>
+    <h2>In-Depth Analysis</h2>
     <p class="lede">Interpreting the analysis, based on every month of Federal Reserve data going back to the 1940s, not just the period shown in the charts above.</p>
     <div class="points">
       <div class="point">
-        <h3>Which direction?</h3>
-        <p>Confidence and unemployment move <strong>opposite</strong> each other. When people feel worse about the economy, unemployment tends to rise in the months that follow.</p>
+        <h3>Direction of Effect</h3>
+        <p>Confidence and unemployment are <strong>negatively correlated</strong>. When people feel worse about the economy, unemployment tends to rise in the months that follow.</p>
       </div>
       <div class="point">
-        <h3>How bad is that reading, really?</h3>
+        <h3>How Bad Is 55.2, Really?</h3>
         <p id="context-text">Loading…</p>
       </div>
       <div class="point">
-        <h3>Where's the catch?</h3>
-        <p>The 12-month signal <strong>looks</strong> strongest but is the one result that fails the statistical test. The dependable window is 1 to 6 months.</p>
+        <h3>What's the catch?</h3>
+        <p>The 12-month signal <strong>looks</strong> strongest but is the one result that fails the statistical test. The most dependable window is 1 to 6 months.</p>
       </div>
     </div>
   </section>
@@ -230,16 +230,13 @@ function renderContext(){
   const vals = seriesMap().UMCSENT.observations.filter(o => o.value !== null);
   const latest = vals.at(-1);
   const low = vals.reduce((a,b) => b.value < a.value ? b : a);
-  const mean = vals.reduce((sum,o) => sum + o.value, 0) / vals.length;
   const atOrBelow = vals.filter(o => o.value <= latest.value).length;
   const pct = Math.round(100 * atOrBelow / vals.length);
   const nearRecordLow = latest.value <= low.value * 1.03;
 
   const text = nearRecordLow
-    ? `At ${fmt(latest.value,1)}, this is close to the <strong>lowest reading on record</strong> for this series. The floor was ${fmt(low.value,1)}, hit in ${monthYear(low.date)}. `
-      + `Confidence has typically run closer to ${fmt(mean,0)} over this period, so today's level is well outside the normal range.`
-    : `At ${fmt(latest.value,1)}, this ranks among the <strong>weakest readings on record</strong> for this series: only about ${pct}% of months have been this low or lower. `
-      + `Confidence has typically run closer to ${fmt(mean,0)} over this period, so today's level is meaningfully below normal.`;
+    ? `At ${fmt(latest.value,1)}, <strong>this is close to the lowest reading on record for Consumer confidence.</strong> The floor was ${fmt(low.value,1)}, hit in ${monthYear(low.date)}.`
+    : `At ${fmt(latest.value,1)}, <strong>this ranks among the weakest readings on record for Consumer confidence.</strong> Only about ${pct}% of months have been this low or lower.`;
 
   document.getElementById('context-text').innerHTML = text;
 }
