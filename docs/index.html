@@ -73,17 +73,6 @@
   .ev-pill.pass{color:var(--ok);border-color:var(--ok);background:var(--ok-bg);}
   .ev-pill.fail{color:var(--no);border-color:var(--no);background:var(--no-bg);}
 
-  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
-  .controls .lbl{font-size:.9rem;color:var(--ink-2);}
-  .seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-  .seg button{
-    appearance:none;border:0;background:var(--surface);color:var(--ink-2);
-    font:inherit;font-size:.86rem;padding:7px 14px;cursor:pointer;min-height:36px;border-right:1px solid var(--border);
-  }
-  .seg button:last-child{border-right:0;}
-  .seg button[aria-pressed="true"]{background:var(--s1);color:#fff;font-weight:600;}
-  .seg button:focus-visible{outline:2px solid var(--s1);outline-offset:-2px;}
-
   .grid-featured{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;}
   @media (max-width:640px){.grid-featured{grid-template-columns:1fr;}}
   .grid-featured .card{padding:22px;}
@@ -99,18 +88,6 @@
   .grid-featured .mini-val{font-size:2rem;}
   .grid-featured .mini-meta{font-size:.86rem;margin-bottom:10px;}
 
-  details{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0 20px;}
-  summary{cursor:pointer;padding:16px 0;font-weight:600;font-size:.97rem;list-style-position:inside;}
-  summary::marker{color:var(--ink-muted);}
-  details[open] summary{border-bottom:1px solid var(--border);margin-bottom:4px;}
-  .tbl-scroll{overflow-x:auto;padding-bottom:16px;}
-  table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px;}
-  th,td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);font-variant-numeric:tabular-nums;}
-  th:first-child,td:first-child{text-align:left;font-variant-numeric:normal;}
-  thead th{font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;}
-  tbody tr:last-child td{border-bottom:0;}
-  .yes{color:var(--ok);font-weight:600;}
-  .no-t{color:var(--no);font-weight:600;}
   .swatch{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:7px;}
 
   footer{border-top:1px solid var(--border);padding-top:22px;font-size:.88rem;color:var(--ink-2);}
@@ -171,30 +148,12 @@
   </section>
 
   <section>
-    <h2>See it for yourself</h2>
-    <p class="lede">Confidence on top, unemployment below, sharing the same timeline. Click through the shift options and watch the deep confidence dip around 2008 move to the right. At "12 mo," it should land almost exactly under unemployment's own peak in late 2009: that near-year gap between the two is one concrete example of the lag this page is testing for.</p>
-    <div class="controls">
-      <span class="lbl">Move confidence forward by:</span>
-      <div class="seg" id="shift-seg" role="group" aria-label="Move confidence forward by"></div>
-    </div>
+    <h2>The full timeline</h2>
+    <p class="lede">Confidence on top, unemployment below, each on its own scale, both covering their complete history. The light line is the raw monthly reading; the bold line is a 12-month rolling average that smooths out the month-to-month noise so the underlying trend is easier to follow.</p>
     <div class="card">
       <div id="lead-plot" class="plot"></div>
       <p class="caption">Two separate panels, each with its own scale. This is deliberately not one chart with two axes, which would let the picture imply a closeness that isn't in the numbers.</p>
     </div>
-  </section>
-
-  <section>
-    <h2>The detail</h2>
-    <p class="lede">Every number behind the charts, for anyone who wants to check the work.</p>
-    <details>
-      <summary>Full results and how to read them</summary>
-      <div class="tbl-scroll"><table id="lag-table"></table></div>
-      <p class="caption" style="padding-bottom:18px;">
-        <strong>Correlation</strong> runs from 0 (no relationship) to −1 (a perfect opposite relationship); around −0.3 to −0.4 is a moderate link.
-        <strong>Evidence test</strong> asks a stricter question: does knowing past confidence actually improve a forecast beyond what unemployment's own history already tells you? Below 0.05 is the conventional bar for "unlikely to be coincidence."
-        A result can score well on the first and still fail the second, which is what happens at the 12-month lead.
-      </p>
-    </details>
   </section>
 
   <footer>
@@ -205,7 +164,6 @@
 
 <script>
 const PLOT_CONFIG = {responsive:true, displayModeBar:false};
-const SHIFTS = [0,1,3,6,12];
 const SERIES_COLOR = {UMCSENT:'--s1', UNRATE:'--s2', GDP:'--s3'};
 const FRIENDLY = {
   UMCSENT:'Consumer confidence', UNRATE:'Unemployment', GDP:'Economic growth (GDP)',
@@ -214,7 +172,6 @@ const FRIENDLY = {
 const UNITS = {UMCSENT:'', UNRATE:'%', CPIAUCSL:'', FEDFUNDS:'%', T10Y2Y:'%'};
 
 let DATA = {indicators:null, lag:null, narrative:null};
-let shiftMonths = 0;
 
 const tok = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const colorFor = id => SERIES_COLOR[id] ? tok(SERIES_COLOR[id]) : tok('--ink-muted');
@@ -237,12 +194,6 @@ function axis(extra){
 }
 function seriesMap(){
   const m={}; DATA.indicators.series.forEach(s=>{m[s.series_id]=s;}); return m;
-}
-function shiftIso(iso, months){
-  if(!months) return iso;
-  const d = new Date(iso+'T00:00:00Z');
-  d.setUTCMonth(d.getUTCMonth()+months);
-  return d.toISOString().slice(0,10);
 }
 function rowsFor(t){
   return DATA.lag.results.filter(r=>r.target_indicator===t).sort((a,b)=>a.lag_months-b.lag_months);
@@ -351,29 +302,32 @@ function drawLead(){
   const m = seriesMap();
   const sent = m.UMCSENT.observations, un = m.UNRATE.observations;
 
-  // Fixed to the real (unshifted) dates so the axis never autoscales to fit a
-  // shifted trace - otherwise a 12-month shift over 36 years of history just
-  // stretches the axis by ~3%, which reads as no change at all. Confidence's
-  // shifted tail clipping past "now" (unemployment's last date) is correct:
-  // that's exactly the portion with no future unemployment reading to compare against.
-  const xMin = sent[0].date < un[0].date ? sent[0].date : un[0].date;
-  const xMax = un.at(-1).date;
-
+  // Each panel gets its raw monthly reading (thin, faded) plus its 12-month
+  // rolling average (bold) on the same axis - a smoothing overlay, not a
+  // second scale, so this doesn't run into the dual-axis problem.
   const traces = [
-    {type:'scatter', mode:'lines', name:'Consumer confidence',
-     x: sent.map(o=>shiftIso(o.date, shiftMonths)), y: sent.map(o=>o.value),
-     line:{color:colorFor('UMCSENT'), width:2}, xaxis:'x', yaxis:'y',
+    {type:'scatter', mode:'lines', name:'Confidence',
+     x: sent.map(o=>o.date), y: sent.map(o=>o.value),
+     line:{color:colorFor('UMCSENT'), width:1.3}, opacity:0.4, xaxis:'x', yaxis:'y',
      hovertemplate:'Confidence %{y:.1f}<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'Confidence (12-mo trend)',
+     x: sent.map(o=>o.date), y: sent.map(o=>o.rolling_12mo_avg),
+     line:{color:colorFor('UMCSENT'), width:2.4}, xaxis:'x', yaxis:'y',
+     hovertemplate:'12-mo trend %{y:.1f}<extra></extra>'},
     {type:'scatter', mode:'lines', name:'Unemployment',
      x: un.map(o=>o.date), y: un.map(o=>o.value),
-     line:{color:colorFor('UNRATE'), width:2}, xaxis:'x', yaxis:'y2',
+     line:{color:colorFor('UNRATE'), width:1.3}, opacity:0.4, xaxis:'x', yaxis:'y2',
      hovertemplate:'Unemployment %{y:.1f}%<extra></extra>'},
+    {type:'scatter', mode:'lines', name:'Unemployment (12-mo trend)',
+     x: un.map(o=>o.date), y: un.map(o=>o.rolling_12mo_avg),
+     line:{color:colorFor('UNRATE'), width:2.4}, xaxis:'x', yaxis:'y2',
+     hovertemplate:'12-mo trend %{y:.1f}%<extra></extra>'},
   ];
   Plotly.newPlot('lead-plot', traces, baseLayout({
     height:430, hovermode:'x unified',
     showlegend:true, legend:{orientation:'h', y:1.12, x:0, font:{size:11}},
     margin:{l:54,r:16,t:50,b:40},
-    xaxis:axis({range:[xMin, xMax], autorange:false}),
+    xaxis:axis({}),
     yaxis:axis({title:{text:'confidence index', font:{size:11}}, domain:[0.58,1]}),
     yaxis2:axis({title:{text:'unemployment %', font:{size:11}}, domain:[0,0.42], anchor:'x'}),
   }), PLOT_CONFIG);
@@ -433,41 +387,6 @@ function drawGrid6(){
   context.forEach(s => drawMiniChart(s, 130));
 }
 
-function renderTable(){
-  const rows = DATA.lag.results.slice().sort((a,b)=>
-    a.target_indicator.localeCompare(b.target_indicator) || a.lag_months-b.lag_months);
-  const body = rows.map(r=>{
-    const ok = r.granger_p_value < 0.05;
-    const name = r.target_indicator==='UNRATE' ? 'Unemployment' : 'Economic growth';
-    return `<tr>
-      <td><span class="swatch" style="background:${colorFor(r.target_indicator)}"></span>${name}</td>
-      <td>${r.lag_months}</td>
-      <td>${fmt(r.cross_correlation,2)}</td>
-      <td>${fmt(r.granger_p_value,3)}</td>
-      <td class="${ok?'yes':'no-t'}">${ok?'passes':'fails'}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('lag-table').innerHTML = `
-    <thead><tr>
-      <th>What it predicts</th><th>Months ahead</th><th>Correlation</th>
-      <th>Evidence test</th><th>Result</th>
-    </tr></thead><tbody>${body}</tbody>`;
-}
-
-function renderShiftControl(){
-  const seg = document.getElementById('shift-seg');
-  seg.innerHTML = SHIFTS.map(m=>
-    `<button type="button" data-m="${m}" aria-pressed="${m===shiftMonths}">${m===0?'nothing':m+' mo'}</button>`).join('');
-  seg.querySelectorAll('button').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      shiftMonths = Number(b.dataset.m);
-      seg.querySelectorAll('button').forEach(x=>
-        x.setAttribute('aria-pressed', String(Number(x.dataset.m)===shiftMonths)));
-      drawLead();
-    });
-  });
-}
-
 function drawAll(){ drawCorr(); drawLead(); drawGrid6(); }
 
 async function init(){
@@ -496,12 +415,10 @@ async function init(){
   renderContext();
   renderNarrative();
   renderEvidence();
-  renderTable();
-  renderShiftControl();
   drawAll();
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
-    renderEvidence(); renderTable(); drawAll();
+    renderEvidence(); drawAll();
   });
 }
 
