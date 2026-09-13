@@ -60,16 +60,7 @@ Six series from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.o
 
 ## Pipeline Architecture
 
-```mermaid
-flowchart LR
-    A[FRED API] --> B[(BigQuery)]
-    B --> C[dbt<br/>transform + test]
-    C --> D[Python<br/>lead-lag analysis]
-    D --> E[Claude API<br/>optional]
-    D --> F[Dashboard<br/>GitHub Pages]
-    E -.-> F
-    G[GitHub Actions<br/>monthly cron] -.orchestrates.-> A
-```
+![Pipeline architecture diagram](assets/architecture.svg)
 
 This is an **ELT** pattern, not ETL: raw data lands in the warehouse first, and transformation happens *inside* it with dbt — the pattern that's replaced transform-in-Python-before-load in most modern data stacks.
 
