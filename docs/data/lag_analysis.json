@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-09-13T04:27:27.882585+00:00",
+  "results": [
+    {
+      "target_indicator": "GDP",
+      "lag_months": 1,
+      "cross_correlation": -0.32050177558305726,
+      "granger_p_value": 0.6105815762930226,
+      "strongest_lag_flag": true,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    },
+    {
+      "target_indicator": "GDP",
+      "lag_months": 3,
+      "cross_correlation": -0.3094912858416604,
+      "granger_p_value": 0.0014999400159904153,
+      "strongest_lag_flag": false,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    },
+    {
+      "target_indicator": "GDP",
+      "lag_months": 6,
+      "cross_correlation": -0.2887288205211786,
+      "granger_p_value": 0.023390948903708225,
+      "strongest_lag_flag": false,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    },
+    {
+      "target_indicator": "GDP",
+      "lag_months": 12,
+      "cross_correlation": -0.25106735456639806,
+      "granger_p_value": 0.03418644686596137,
+      "strongest_lag_flag": false,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    },
+    {
+      "target_indicator": "UNRATE",
+      "lag_months": 1,
+      "cross_correlation": -0.3113046682868879,
+      "granger_p_value": 0.003852651937994214,
+      "strongest_lag_flag": false,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    },
+    {
+      "target_indicator": "UNRATE",
+      "lag_months": 3,
+      "cross_correlation": -0.32872061091467114,
+      "granger_p_value": 0.002222645476551608,
+      "strongest_lag_flag": false,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    },
+    {
+      "target_indicator": "UNRATE",
+      "lag_months": 6,
+      "cross_correlation": -0.3755134194566725,
+      "granger_p_value": 0.013038533902840191,
+      "strongest_lag_flag": false,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    },
+    {
+      "target_indicator": "UNRATE",
+      "lag_months": 12,
+      "cross_correlation": -0.42781556123417724,
+      "granger_p_value": 0.05445407142692926,
+      "strongest_lag_flag": true,
+      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+    }
+  ]
+}

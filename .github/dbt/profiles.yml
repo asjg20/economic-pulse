@@ -1,0 +1,13 @@
+# CI-only dbt profile. The workflow points DBT_PROFILES_DIR at this directory so
+# local development keeps using ~/.dbt/profiles.yml untouched.
+economic_pulse:
+  target: ci
+  outputs:
+    ci:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: staging
+      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
+      location: US
+      threads: 4

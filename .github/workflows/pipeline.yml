@@ -1,0 +1,86 @@
+name: Economic Pulse pipeline
+
+on:
+  # UMCSENT and UNRATE for the prior month are both published by the 10th.
+  schedule:
+    - cron: "0 13 10 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    env:
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+      GCP_PROJECT_ID: economic-pulse
+      GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/gcp-service-account.json
+      BQ_DATASET: raw
+      BQ_MARTS_DATASET: marts
+      DBT_PROFILES_DIR: ${{ github.workspace }}/.github/dbt
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Write BigQuery credentials
+        env:
+          GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        run: printf '%s' "$GCP_SERVICE_ACCOUNT" > "$GOOGLE_APPLICATION_CREDENTIALS"
+
+      - name: Extract - FRED into BigQuery raw
+        run: python extract/fetch_fred.py
+
+      - name: Transform - build dbt models
+        working-directory: dbt
+        run: |
+          dbt deps
+          dbt run
+
+      # The lag-analysis table is written by the analyze step below, so its tests
+      # can't run yet - everything else is testable at this point.
+      - name: Test - staging and mart models
+        working-directory: dbt
+        run: dbt test --exclude source:marts.fct_sentiment_lag_analysis
+
+      - name: Analyze - cross-correlation and Granger causality
+        run: python analyze/lead_lag_analysis.py
+
+      - name: Test - lag analysis results
+        working-directory: dbt
+        run: dbt test --select source:marts.fct_sentiment_lag_analysis
+
+      - name: Check source freshness
+        working-directory: dbt
+        run: dbt source freshness
+
+      - name: Export - dashboard JSON
+        run: python export/export_for_dashboard.py
+
+      - name: Commit dashboard data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data
+          if git diff --staged --quiet; then
+            echo "No dashboard changes to commit."
+          else
+            git commit -m "Update dashboard data ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+
+      - name: Remove credentials
+        if: always()
+        run: rm -f "$GOOGLE_APPLICATION_CREDENTIALS"
