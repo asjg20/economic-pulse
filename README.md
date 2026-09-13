@@ -147,6 +147,7 @@ Things a careful reader should know before trusting the numbers:
 - **Correlation is not causation, and Granger causality isn't either.** It's a claim about predictive information, not mechanism.
 - **The dashboard charts start at 1990**, to keep the payload small. The statistics run on each series' complete history, back to the 1940s for some.
 - **The AI narrative step is real but unrun** — see [Step 5](#step-5-narrate-optional-disabled).
+- **One CPI data point is a manual override, not an official figure.** BLS never published a standalone October 2025 CPI report during that year's government shutdown, so FRED returns `null` for that date and always will. `extract/fetch_fred.py` overrides it to 325.0 — a figure sourced from a Google search result, not verified against an official BLS release — so that month-over-month and year-over-year comparisons don't silently misalign around the gap. Every other data point in this project comes straight from FRED with no manual intervention.
 
 ## Design Decisions Worth Asking About
 

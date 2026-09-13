@@ -12,6 +12,43 @@ load_dotenv()
 
 SERIES_IDS = ["UMCSENT", "UNRATE", "GDP", "CPIAUCSL", "FEDFUNDS", "T10Y2Y"]
 
+# Manual overrides for gaps FRED itself never fills. BLS did not publish a
+# standalone October 2025 CPIAUCSL reading during that year's government
+# shutdown, so FRED returns null for that date and always will. The value
+# below is not from an official BLS release - it was sourced from a Google
+# search result, not verified against BLS's own publications, and should be
+# treated as approximate rather than authoritative. Without this override,
+# every monthly extractor run would keep re-loading the null FRED published.
+MANUAL_OVERRIDES = {
+    ("CPIAUCSL", "2025-10-01"): 325.0,
+}
+
+
+def apply_manual_overrides(df: pd.DataFrame) -> pd.DataFrame:
+    for (series_id, date_str), value in MANUAL_OVERRIDES.items():
+        override_date = pd.to_datetime(date_str).date()
+        mask = (df["series_id"] == series_id) & (df["date"] == override_date)
+        if mask.any():
+            df.loc[mask, "value"] = value
+        else:
+            df = pd.concat(
+                [
+                    df,
+                    pd.DataFrame(
+                        [
+                            {
+                                "series_id": series_id,
+                                "date": override_date,
+                                "value": value,
+                                "loaded_at": datetime.now(timezone.utc),
+                            }
+                        ]
+                    ),
+                ],
+                ignore_index=True,
+            )
+    return df
+
 TABLE_SCHEMA = [
     bigquery.SchemaField("series_id", "STRING", mode="REQUIRED"),
     bigquery.SchemaField("date", "DATE", mode="REQUIRED"),
@@ -35,7 +72,8 @@ def fetch_series(fred: Fred, series_id: str) -> pd.DataFrame:
 
 def fetch_all(fred: Fred) -> pd.DataFrame:
     frames = [fetch_series(fred, series_id) for series_id in SERIES_IDS]
-    return pd.concat(frames, ignore_index=True)
+    df = pd.concat(frames, ignore_index=True)
+    return apply_manual_overrides(df)
 
 
 def load_to_bigquery(df: pd.DataFrame, project_id: str, dataset: str) -> None:
