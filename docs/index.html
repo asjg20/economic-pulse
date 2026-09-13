@@ -50,13 +50,6 @@
   h2{font-size:1.3rem;margin:0 0 8px;letter-spacing:-.01em;}
   .lede{color:var(--ink-2);margin:0 0 22px;font-size:.97rem;}
 
-  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
-  @media (max-width:760px){.tiles{grid-template-columns:1fr;}}
-  .tile{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:17px 19px;display:flex;flex-direction:column;gap:5px;}
-  .tile .label{font-size:.75rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;}
-  .tile .value{font-size:1.75rem;font-weight:600;line-height:1.1;}
-  .tile .note{font-size:.86rem;color:var(--ink-2);}
-
   .points{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
   @media (max-width:760px){.points{grid-template-columns:1fr;}}
   .point{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
@@ -141,7 +134,7 @@
 
   <section>
     <h2>Where things stand now</h2>
-    <p class="lede">Consumer confidence and unemployment, the two series this analysis is about, plus two more that round out the picture. Latest reading and the change over the past year.</p>
+    <p class="lede">Five indicators, updated automatically each month. Consumer confidence and unemployment are the two this analysis is about; inflation, interest rates and GDP round out the picture.</p>
     <div class="grid-featured" id="grid-featured"></div>
     <div class="grid-context" id="grid-context"></div>
   </section>
@@ -149,9 +142,8 @@
   <div id="narrative-slot"></div>
 
   <section>
-    <h2>The numbers</h2>
-    <p class="lede">Based on every month of Federal Reserve data going back to the 1940s, not just the period shown in the charts below.</p>
-    <div class="tiles" id="tiles"></div>
+    <h2>What this means</h2>
+    <p class="lede">Interpreting the analysis, based on every month of Federal Reserve data going back to the 1940s, not just the period shown in the charts above.</p>
     <div class="points">
       <div class="point">
         <h3>Which direction?</h3>
@@ -277,22 +269,6 @@ function renderVerdict(){
     ? `Falling confidence tends to precede rising unemployment, and that pattern holds up to statistical testing at ${pass.map(p=>p+'-month').join(', ')} lead times. `
       + `The strongest raw relationship sits at ${best.lag_months} months (r = ${fmt(best.cross_correlation,2)}).`
     : '';
-}
-
-function renderTiles(){
-  const m = seriesMap();
-  const sent = m.UMCSENT.observations.at(-1);
-  const un = m.UNRATE.observations.at(-1);
-  const pass = passingRows('UNRATE').map(r=>r.lag_months);
-  const tiles = [
-    {label:'Dependable warning window', value: pass.length ? `${Math.min(...pass)}–${Math.max(...pass)} mo` : 'none',
-     note:'ahead of unemployment moves'},
-    {label:'Latest confidence reading', value: fmt(sent.value,1), note:`index, ${sent.date}`},
-    {label:'Latest unemployment', value: fmt(un.value,1)+'%', note:un.date},
-  ];
-  document.getElementById('tiles').innerHTML = tiles.map(t=>`
-    <div class="tile"><span class="label">${t.label}</span>
-    <span class="value">${t.value}</span><span class="note">${t.note}</span></div>`).join('');
 }
 
 function monthYear(iso){
@@ -508,7 +484,6 @@ async function init(){
     `Updated automatically · data as of ${built.toISOString().slice(0,10)}`;
 
   renderVerdict();
-  renderTiles();
   renderContext();
   renderNarrative();
   renderEvidence();
