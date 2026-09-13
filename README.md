@@ -62,18 +62,13 @@ Six series from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.o
 
 ```mermaid
 flowchart LR
-    A[FRED API] -->|extract/fetch_fred.py| B[(BigQuery: raw)]
-    B -->|dbt staging model| C[(BigQuery: staging)]
-    C -->|dbt mart + tests| D[(BigQuery: marts)]
-    D -->|cross-correlation + Granger| X[analyze/lead_lag_analysis.py<br/>statsmodels]
-    X --> D2[(fct_sentiment_lag_analysis)]
-    D2 -.optional.-> E[ai/generate_narrative.py<br/>Claude API]
-    D --> F[export/export_for_dashboard.py]
-    D2 --> F
+    A[FRED API] --> B[(BigQuery)]
+    B --> C[dbt<br/>transform + test]
+    C --> D[Python<br/>lead-lag analysis]
+    D --> E[Claude API<br/>optional]
+    D --> F[Dashboard<br/>GitHub Pages]
     E -.-> F
-    F --> G[docs/data/*.json]
-    G --> H[GitHub Pages dashboard]
-    I[GitHub Actions<br/>monthly cron] -.orchestrates every step.-> A
+    G[GitHub Actions<br/>monthly cron] -.orchestrates.-> A
 ```
 
 This is an **ELT** pattern, not ETL: raw data lands in the warehouse first, and transformation happens *inside* it with dbt — the pattern that's replaced transform-in-Python-before-load in most modern data stacks.
