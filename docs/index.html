@@ -44,11 +44,11 @@
   }
   .answer .kicker{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin:0 0 10px;}
   .answer .verdict{font-size:clamp(1.15rem,2.6vw,1.45rem);font-weight:600;line-height:1.35;margin:0 0 12px;letter-spacing:-.01em;}
-  .answer .detail{font-size:1rem;color:var(--ink-2);margin:0;max-width:70ch;}
+  .answer .detail{font-size:1rem;color:var(--ink-2);margin:0;}
 
   section{margin-bottom:48px;}
   h2{font-size:1.3rem;margin:0 0 8px;letter-spacing:-.01em;}
-  .lede{color:var(--ink-2);margin:0 0 22px;max-width:70ch;font-size:.97rem;}
+  .lede{color:var(--ink-2);margin:0 0 22px;font-size:.97rem;}
 
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:26px;}
   @media (max-width:760px){.tiles{grid-template-columns:1fr;}}
@@ -65,7 +65,7 @@
 
   .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
   .plot{width:100%;}
-  .caption{font-size:.86rem;color:var(--ink-2);margin:12px 0 0;max-width:70ch;}
+  .caption{font-size:.86rem;color:var(--ink-2);margin:12px 0 0;}
 
   .evidence{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   @media (max-width:700px){.evidence{grid-template-columns:1fr;}}
@@ -122,7 +122,7 @@
 
   <header>
     <p class="eyebrow">Economic Pulse</p>
-    <h1>Does consumer confidence predict the economy?</h1>
+    <h1 id="page-title">Does consumer confidence predict the economy?</h1>
     <p class="stamp" id="stamp">Loading…</p>
   </header>
 
@@ -136,7 +136,7 @@
 
   <section>
     <h2>The numbers</h2>
-    <p class="lede" style="max-width:none;">Based on every month of Federal Reserve data going back to the 1940s — not just the period shown in the charts below.</p>
+    <p class="lede">Based on every month of Federal Reserve data going back to the 1940s — not just the period shown in the charts below.</p>
     <div class="tiles" id="tiles"></div>
     <div class="points">
       <div class="point">
@@ -469,6 +469,45 @@ async function init(){
     renderEvidence(); renderTable(); drawAll();
   });
 }
+
+/* Sizes the title as large as possible while staying on one line that
+   spans the header - the right size depends on the text length, which
+   CSS alone can't measure, so this binary-searches it against the
+   actual rendered width. Below 640px it hands sizing back to the CSS
+   clamp, since forcing a 47-character sentence onto one line on a
+   phone would make it illegible. */
+function fitTitle(){
+  const h1 = document.getElementById('page-title');
+  if (!h1) return;
+  const header = h1.closest('header');
+
+  if (window.innerWidth < 640) {
+    h1.style.fontSize = '';
+    h1.style.whiteSpace = '';
+    return;
+  }
+
+  h1.style.whiteSpace = 'nowrap';
+  const available = header.clientWidth;
+  const MIN = 24, MAX = 110;
+  let lo = MIN, hi = MAX;
+  h1.style.fontSize = hi + 'px';
+  if (h1.scrollWidth > available) {
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi + 1) / 2);
+      h1.style.fontSize = mid + 'px';
+      if (h1.scrollWidth <= available) lo = mid; else hi = mid - 1;
+    }
+    h1.style.fontSize = lo + 'px';
+  }
+}
+
+let fitTitleTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(fitTitleTimer);
+  fitTitleTimer = setTimeout(fitTitle, 120);
+});
+fitTitle();
 
 init();
 </script>
