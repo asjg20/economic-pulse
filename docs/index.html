@@ -346,8 +346,20 @@ function miniCardHtml(s){
   const last = s.observations.at(-1);
   const yoy = last.value_yoy_change;
   const arrow = (yoy===null||yoy===undefined) ? '' : (yoy>0?'▲':(yoy<0?'▼':'–'));
-  const yoyTxt = (yoy===null||yoy===undefined) ? 'no year-ago comparison'
-    : `${arrow} ${formatValue(s.series_id, Math.abs(yoy))} vs a year earlier`;
+  // CPIAUCSL is a price-level index, not a percentage, so a raw point
+  // difference reads as inflation but isn't one. Convert to the actual
+  // year-over-year percent change using the year-ago level implied by
+  // value - value_yoy_change.
+  let yoyTxt;
+  if (yoy===null||yoy===undefined){
+    yoyTxt = 'no year-ago comparison';
+  } else if (s.series_id === 'CPIAUCSL'){
+    const yearAgoValue = last.value - yoy;
+    const pct = (yoy / yearAgoValue) * 100;
+    yoyTxt = `${arrow} ${fmt(Math.abs(pct),1)}% vs a year earlier`;
+  } else {
+    yoyTxt = `${arrow} ${formatValue(s.series_id, Math.abs(yoy))} vs a year earlier`;
+  }
   return `<div class="card">
     <div class="mini-head">
       <span class="mini-name">${FRIENDLY[s.series_id] || s.indicator_name}</span>
