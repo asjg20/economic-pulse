@@ -127,7 +127,7 @@
         <p>Confidence and unemployment are <strong>negatively correlated</strong>. When people feel worse about the economy, unemployment tends to rise in the months that follow.</p>
       </div>
       <div class="point">
-        <h3>How Bad Is 55.2, Really?</h3>
+        <h3 id="context-heading">How Bad Is That, Really?</h3>
         <p id="context-text">Loading…</p>
       </div>
       <div class="point">
@@ -238,6 +238,7 @@ function renderContext(){
     ? `At ${fmt(latest.value,1)}, <strong>this is close to the lowest reading on record for Consumer confidence.</strong> The floor was ${fmt(low.value,1)}, hit in ${monthYear(low.date)}.`
     : `At ${fmt(latest.value,1)}, <strong>this ranks among the weakest readings on record for Consumer confidence.</strong> Only about ${pct}% of months have been this low or lower.`;
 
+  document.getElementById('context-heading').textContent = `How Bad Is ${fmt(latest.value,1)}, Really?`;
   document.getElementById('context-text').innerHTML = text;
 }
 
