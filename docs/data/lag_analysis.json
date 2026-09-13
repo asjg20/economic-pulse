@@ -1,69 +1,69 @@
 {
-  "generated_at": "2026-09-13T04:27:27.882585+00:00",
+  "generated_at": "2026-09-13T04:41:51.221015+00:00",
   "results": [
     {
       "target_indicator": "GDP",
       "lag_months": 1,
-      "cross_correlation": -0.32050177558305726,
-      "granger_p_value": 0.6105815762930226,
+      "cross_correlation": -0.3205017755830575,
+      "granger_p_value": 0.6105815762938692,
       "strongest_lag_flag": true,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     },
     {
       "target_indicator": "GDP",
       "lag_months": 3,
-      "cross_correlation": -0.3094912858416604,
-      "granger_p_value": 0.0014999400159904153,
+      "cross_correlation": -0.30949128584166063,
+      "granger_p_value": 0.0014999400159904138,
       "strongest_lag_flag": false,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     },
     {
       "target_indicator": "GDP",
       "lag_months": 6,
-      "cross_correlation": -0.2887288205211786,
-      "granger_p_value": 0.023390948903708225,
+      "cross_correlation": -0.2887288205211788,
+      "granger_p_value": 0.02339094890371486,
       "strongest_lag_flag": false,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     },
     {
       "target_indicator": "GDP",
       "lag_months": 12,
-      "cross_correlation": -0.25106735456639806,
-      "granger_p_value": 0.03418644686596137,
+      "cross_correlation": -0.2510673545663981,
+      "granger_p_value": 0.034186446865954616,
       "strongest_lag_flag": false,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     },
     {
       "target_indicator": "UNRATE",
       "lag_months": 1,
-      "cross_correlation": -0.3113046682868879,
+      "cross_correlation": -0.31130466828688785,
       "granger_p_value": 0.003852651937994214,
       "strongest_lag_flag": false,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     },
     {
       "target_indicator": "UNRATE",
       "lag_months": 3,
-      "cross_correlation": -0.32872061091467114,
-      "granger_p_value": 0.002222645476551608,
+      "cross_correlation": -0.3287206109146716,
+      "granger_p_value": 0.002222645476551874,
       "strongest_lag_flag": false,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     },
     {
       "target_indicator": "UNRATE",
       "lag_months": 6,
-      "cross_correlation": -0.3755134194566725,
-      "granger_p_value": 0.013038533902840191,
+      "cross_correlation": -0.37551341945667216,
+      "granger_p_value": 0.01303853390284147,
       "strongest_lag_flag": false,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     },
     {
       "target_indicator": "UNRATE",
       "lag_months": 12,
-      "cross_correlation": -0.42781556123417724,
-      "granger_p_value": 0.05445407142692926,
+      "cross_correlation": -0.427815561234177,
+      "granger_p_value": 0.054454071426921574,
       "strongest_lag_flag": true,
-      "computed_at": "2026-09-13 04:27:08.325914+00:00"
+      "computed_at": "2026-09-13 04:41:37.960579+00:00"
     }
   ]
 }
