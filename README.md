@@ -77,5 +77,5 @@ Things a careful reader should know before trusting the numbers:
 ## My Design Decisions
 
 - **Granger causality over a bare correlation** - Correlation alone can't tell us whether confidence actually comes before and helps predict the economy, or whether the two simply move together. Granger causality gives us a stronger way to test whether past confidence contains useful information for predicting future economic conditions.
-- **Why GitHub Actions?** — Idk its easy.  At one run a month, a scheduled workflow like this is the correct tool.
+- **Why GitHub Actions?** — Idk its easy.
 
