@@ -55,34 +55,27 @@ Six series from [FRED (Federal Reserve Economic Data)](https://fred.stlouisfed.o
 
 ![Pipeline architecture diagram](assets/architecture.svg)
 
-This is an **ELT** pattern, not ETL: raw data lands in the warehouse first, and transformation happens *inside* it with dbt — the pattern that's replaced transform-in-Python-before-load in most modern data stacks.
-
 ## What It Found
 
-Sentiment does carry real predictive information about unemployment — but not where you'd first look for it.
+Consumer confidence does carry real predictive information about unemployment. Kinda.
 
 | | Strongest correlation | Granger-significant lags |
 |---|---|---|
 | **Unemployment** | 12 months (r = −0.43) | 1, 3, 6 months (3 of 4) |
 | **GDP** | 1 month (r = −0.32) | 3, 6, 12 months (3 of 4) |
 
-The two measures disagree, and that disagreement is the interesting result. For unemployment, the lag with the strongest raw correlation (12 months, r = −0.43) is the one lag that *fails* the significance test (p = 0.054), while the shorter leads that correlate less strongly all pass it. Correlation describes how similarly two series move; Granger causality asks whether knowing the past actually improves a forecast. Those are different questions, and here they give different answers — which is exactly why the project runs both instead of stopping at a correlation.
+For unemployment, the 12-month lag has the strongest correlation (r = −0.43), but it is also the only lag that does not reach statistical significance (p = 0.054). Meanwhile, the shorter lags have weaker correlations but are statistically significant.
 
-## Honest Notes
+## Notes
 
 Things a careful reader should know before trusting the numbers:
 
-- **GDP is quarterly, the analysis grid is monthly.** Each quarter's reading is forward-filled across its three months — a standard simplification, but a real one.
-- **Granger causality runs on levels, not differenced series.** These series aren't stationary, which the test technically assumes. Differencing them would be more rigorous and would likely change the p-values.
-- **Correlation is not causation, and Granger causality isn't either.** It's a claim about predictive information, not mechanism.
-- **The dashboard charts start at 1990**, to keep the payload small. The statistics run on each series' complete history, back to the 1940s for some.
-- **The AI narrative step is real but unrun.** [`ai/generate_narrative.py`](ai/generate_narrative.py) sends the 8 lag-analysis rows plus the latest reading per indicator to Claude for a plain-language summary. It's switched off because the Anthropic API's prepaid minimum isn't worth it for a once-a-month, ~700-token call on a project meant to cost nothing.
-- **One CPI data point is a manual override, not an official figure.** BLS never published a standalone October 2025 CPI report during that year's government shutdown, so FRED returns `null` for that date and always will. `extract/fetch_fred.py` overrides it to 325.0 — a figure sourced from a Google search result, not verified against an official BLS release — so that month-over-month and year-over-year comparisons don't silently misalign around the gap. Every other data point in this project comes straight from FRED with no manual intervention.
+- **IMPORTANT!** **One CPI data point is a manual override, not an official figure.** BLS never published a standalone October 2025 CPI report during that year's government shutdown, so FRED returns `null` for that date and always will. I decided to override it to 325.0; a figure that I found from a Google search result, and it is not verified against an official BLS release. Every other data point in this project comes straight from FRED with no manual intervention.
+- **The AI narrative step is real but unrun.** Python sends the 8 lag-analysis rows plus the latest reading per indicator to Claude for a plain-language summary. It's switched off because the Anthropic API's prepaid minimum isn't worth it for me to pay once a month.
+- **Correlation is not causation, and Granger causality isn't either.** This claim is about predictive information, not mechanism.
 
-## Design Decisions Worth Asking About
+## My Design Decisions
 
-- **Granger causality over a bare correlation** — correlation alone can't separate "sentiment leads the economy" from "sentiment and the economy move together." The stronger claim is the defensible one, and it's what surfaced the disagreement above.
-- **ELT with dbt over ETL-in-Python** — transformations are version-controlled SQL with tests attached, not buried in a script.
-- **GitHub Actions instead of Airflow** — Airflow needs hosted infrastructure this project deliberately doesn't have. At one run a month, a scheduled workflow is genuinely the right tool.
-- **Two dbt profiles** — CI reads its connection from environment variables via a profile under `.github/dbt/`, so the runner never needs the local machine's credential paths.
-- **No dual-axis charts** — plotting sentiment and unemployment on two y-scales would let the chart imply an alignment that isn't in the data.
+- **Granger causality over a bare correlation** - Correlation alone can't tell us whether confidence actually comes before and helps predict the economy, or whether the two simply move together. Granger causality gives us a stronger way to test whether past confidence contains useful information for predicting future economic conditions.
+- **Why GitHub Actions?** — Idk its easy.  At one run a month, a scheduled workflow like this is the correct tool.
+
