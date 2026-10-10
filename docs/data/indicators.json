@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-13T20:41:55.707981+00:00",
+  "generated_at": "2026-10-10T17:41:25.700109+00:00",
   "start_date": "1990-01-01",
   "series": [
     {
@@ -6171,6 +6171,13 @@
           "value_mom_change": 0.0,
           "value_yoy_change": -0.7000000000000002,
           "rolling_12mo_avg": 3.7491666666666665
+        },
+        {
+          "date": "2026-09-01",
+          "value": 3.75,
+          "value_mom_change": 0.1200000000000001,
+          "value_yoy_change": -0.46999999999999975,
+          "rolling_12mo_avg": 3.71
         }
       ]
     },
@@ -7048,157 +7055,157 @@
         },
         {
           "date": "2021-01-01",
-          "value": 22680.693,
-          "value_mom_change": 593.5329999999994,
-          "value_yoy_change": 2352.1399999999994,
-          "rolling_12mo_avg": 21386.6045
+          "value": 22704.65,
+          "value_mom_change": 617.4900000000016,
+          "value_yoy_change": 2376.0970000000016,
+          "rolling_12mo_avg": 21388.600916666666
         },
         {
           "date": "2021-04-01",
-          "value": 23425.91,
-          "value_mom_change": 745.2170000000006,
-          "value_yoy_change": 2844.9979999999996,
-          "rolling_12mo_avg": 21623.687666666665
+          "value": 23456.708,
+          "value_mom_change": 752.0579999999973,
+          "value_yoy_change": 2875.7959999999985,
+          "rolling_12mo_avg": 21628.250583333334
         },
         {
           "date": "2021-07-01",
-          "value": 23982.379,
-          "value_mom_change": 556.469000000001,
-          "value_yoy_change": 3183.6490000000013,
-          "rolling_12mo_avg": 21888.99175
+          "value": 23998.844,
+          "value_mom_change": 542.1360000000022,
+          "value_yoy_change": 3200.1140000000014,
+          "rolling_12mo_avg": 21894.92675
         },
         {
           "date": "2021-10-01",
-          "value": 24813.6,
-          "value_mom_change": 831.2209999999977,
-          "value_yoy_change": 3895.733,
-          "rolling_12mo_avg": 22213.636166666667
+          "value": 24823.19,
+          "value_mom_change": 824.3459999999977,
+          "value_yoy_change": 3905.3230000000003,
+          "rolling_12mo_avg": 22220.370333333332
         },
         {
           "date": "2022-01-01",
-          "value": 25250.347,
-          "value_mom_change": 436.747000000003,
-          "value_yoy_change": 4138.747000000003,
-          "rolling_12mo_avg": 22558.531750000002
+          "value": 25259.992,
+          "value_mom_change": 436.8019999999997,
+          "value_yoy_change": 4148.392,
+          "rolling_12mo_avg": 22566.069666666666
         },
         {
           "date": "2022-04-01",
-          "value": 25861.292,
-          "value_mom_change": 610.9449999999997,
-          "value_yoy_change": 4463.354000000003,
-          "rolling_12mo_avg": 22930.477916666667
+          "value": 25869.353,
+          "value_mom_change": 609.3610000000008,
+          "value_yoy_change": 4471.415000000001,
+          "rolling_12mo_avg": 22938.687583333332
         },
         {
           "date": "2022-07-01",
-          "value": 26336.304,
-          "value_mom_change": 475.0119999999988,
-          "value_yoy_change": 4619.133000000002,
-          "rolling_12mo_avg": 23315.405666666666
+          "value": 26335.374,
+          "value_mom_change": 466.02100000000064,
+          "value_yoy_change": 4618.203000000001,
+          "rolling_12mo_avg": 23323.537833333332
         },
         {
           "date": "2022-10-01",
-          "value": 26770.514,
-          "value_mom_change": 434.2099999999991,
-          "value_yoy_change": 4837.296999999999,
-          "rolling_12mo_avg": 23718.513750000002
+          "value": 26774.117,
+          "value_mom_change": 438.7429999999986,
+          "value_yoy_change": 4840.899999999998,
+          "rolling_12mo_avg": 23726.94616666667
         },
         {
           "date": "2023-01-01",
-          "value": 27216.445,
-          "value_mom_change": 445.9310000000005,
-          "value_yoy_change": 5465.2069999999985,
-          "rolling_12mo_avg": 24173.947666666667
+          "value": 27241.282,
+          "value_mom_change": 467.1650000000009,
+          "value_yoy_change": 5490.043999999998,
+          "rolling_12mo_avg": 24184.449833333332
         },
         {
           "date": "2023-04-01",
-          "value": 27530.055,
-          "value_mom_change": 313.6100000000006,
-          "value_yoy_change": 7571.763999999999,
-          "rolling_12mo_avg": 24804.928
+          "value": 27533.925,
+          "value_mom_change": 292.64300000000003,
+          "value_yoy_change": 7575.633999999998,
+          "rolling_12mo_avg": 24815.752666666667
         },
         {
           "date": "2023-07-01",
-          "value": 28074.846,
-          "value_mom_change": 544.7910000000011,
-          "value_yoy_change": 6370.409,
-          "rolling_12mo_avg": 25335.795416666668
+          "value": 28064.032,
+          "value_mom_change": 530.107,
+          "value_yoy_change": 6359.5949999999975,
+          "rolling_12mo_avg": 25345.718916666665
         },
         {
           "date": "2023-10-01",
-          "value": 28424.722,
-          "value_mom_change": 349.8760000000002,
-          "value_yoy_change": 6337.562000000002,
-          "rolling_12mo_avg": 25863.925583333334
+          "value": 28464.306,
+          "value_mom_change": 400.27400000000125,
+          "value_yoy_change": 6377.146000000001,
+          "rolling_12mo_avg": 25877.14775
         },
         {
           "date": "2024-01-01",
-          "value": 28708.161,
-          "value_mom_change": 283.4389999999985,
-          "value_yoy_change": 6027.468000000001,
-          "rolling_12mo_avg": 26366.214583333334
+          "value": 28793.191,
+          "value_mom_change": 328.8849999999984,
+          "value_yoy_change": 6088.540999999997,
+          "rolling_12mo_avg": 26384.526166666667
         },
         {
           "date": "2024-04-01",
-          "value": 29147.044,
-          "value_mom_change": 438.88300000000163,
-          "value_yoy_change": 5721.134000000002,
-          "rolling_12mo_avg": 26842.97575
+          "value": 29232.964,
+          "value_mom_change": 439.77300000000105,
+          "value_yoy_change": 5776.256000000001,
+          "rolling_12mo_avg": 26865.880833333333
         },
         {
           "date": "2024-07-01",
-          "value": 29511.664,
-          "value_mom_change": 364.619999999999,
-          "value_yoy_change": 5529.285,
-          "rolling_12mo_avg": 27303.7495
+          "value": 29568.256,
+          "value_mom_change": 335.2920000000013,
+          "value_yoy_change": 5569.412,
+          "rolling_12mo_avg": 27329.998499999998
         },
         {
           "date": "2024-10-01",
-          "value": 29825.182,
-          "value_mom_change": 313.51800000000003,
-          "value_yoy_change": 5011.582000000002,
-          "rolling_12mo_avg": 27721.381333333335
+          "value": 29929.552,
+          "value_mom_change": 361.29599999999846,
+          "value_yoy_change": 5106.362000000001,
+          "rolling_12mo_avg": 27755.528666666665
         },
         {
           "date": "2025-01-01",
-          "value": 30042.113,
-          "value_mom_change": 216.9310000000005,
-          "value_yoy_change": 4791.766,
-          "rolling_12mo_avg": 28120.69516666667
+          "value": 30171.979,
+          "value_mom_change": 242.42699999999968,
+          "value_yoy_change": 4911.987000000001,
+          "rolling_12mo_avg": 28164.860916666665
         },
         {
           "date": "2025-04-01",
-          "value": 30485.729,
-          "value_mom_change": 443.61599999999817,
-          "value_yoy_change": 4624.436999999998,
-          "rolling_12mo_avg": 28506.064916666666
+          "value": 30630.174,
+          "value_mom_change": 458.1949999999997,
+          "value_yoy_change": 4760.821,
+          "rolling_12mo_avg": 28561.596
         },
         {
           "date": "2025-07-01",
-          "value": 31098.027,
-          "value_mom_change": 612.2979999999989,
-          "value_yoy_change": 4761.722999999998,
-          "rolling_12mo_avg": 28902.87516666667
+          "value": 31180.493,
+          "value_mom_change": 550.3189999999995,
+          "value_yoy_change": 4845.118999999999,
+          "rolling_12mo_avg": 28965.355916666667
         },
         {
           "date": "2025-10-01",
-          "value": 31422.526,
-          "value_mom_change": 324.49900000000343,
-          "value_yoy_change": 4652.012000000002,
-          "rolling_12mo_avg": 29290.542833333333
+          "value": 31462.523,
+          "value_mom_change": 282.0300000000025,
+          "value_yoy_change": 4688.406000000003,
+          "rolling_12mo_avg": 29356.056416666666
         },
         {
           "date": "2026-01-01",
-          "value": 31865.721,
-          "value_mom_change": 443.1949999999997,
-          "value_yoy_change": 4649.276000000002,
-          "rolling_12mo_avg": 29677.982500000002
+          "value": 31906.274,
+          "value_mom_change": 443.7510000000002,
+          "value_yoy_change": 4664.992000000002,
+          "rolling_12mo_avg": 29744.80575
         },
         {
           "date": "2026-04-01",
-          "value": 32486.066,
-          "value_mom_change": 620.3449999999975,
-          "value_yoy_change": 4956.010999999999,
-          "rolling_12mo_avg": 30090.983416666666
+          "value": 32563.03,
+          "value_mom_change": 656.7559999999976,
+          "value_yoy_change": 5029.105,
+          "rolling_12mo_avg": 30163.897833333333
         }
       ]
     },
@@ -10287,11 +10294,18 @@
           "rolling_12mo_avg": 0.4741666666666667
         },
         {
-          "date": "2026-09-11",
-          "value": 0.33,
-          "value_mom_change": -0.06,
-          "value_yoy_change": -0.13999999999999996,
-          "rolling_12mo_avg": 0.4091666666666667
+          "date": "2026-09-30",
+          "value": 0.41,
+          "value_mom_change": 0.03999999999999998,
+          "value_yoy_change": 0.08999999999999997,
+          "rolling_12mo_avg": 0.3
+        },
+        {
+          "date": "2026-10-09",
+          "value": 0.44,
+          "value_mom_change": -0.02999999999999997,
+          "value_yoy_change": 0.18,
+          "rolling_12mo_avg": 0.42083333333333334
         }
       ]
     },
@@ -13371,6 +13385,13 @@
           "value_mom_change": 5.700000000000003,
           "value_yoy_change": -6.5,
           "rolling_12mo_avg": 53.03333333333333
+        },
+        {
+          "date": "2026-08-01",
+          "value": 51.7,
+          "value_mom_change": -3.5,
+          "value_yoy_change": -6.5,
+          "rolling_12mo_avg": 52.49166666666667
         }
       ]
     },
@@ -16450,6 +16471,13 @@
           "value_mom_change": 0.0,
           "value_yoy_change": null,
           "rolling_12mo_avg": 4.3
+        },
+        {
+          "date": "2026-09-01",
+          "value": 4.2,
+          "value_mom_change": 0.10000000000000053,
+          "value_yoy_change": null,
+          "rolling_12mo_avg": 4.291666666666667
         }
       ]
     }
